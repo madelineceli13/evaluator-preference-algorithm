@@ -20,7 +20,7 @@ print(df['solution_quality'].unique())
 Y = np.asarray(df['solution_quality'])
 X = np.asarray(df[['solution_feasibility', 'solution_novelty']])
 
-# empirical_simulation(X,Y, dir_name, name)
+empirical_simulation(X,Y, dir_name, name)
 noise_level(X,Y,name, split = True)
 
 # -------------------- ICLR ------------------------------ # 
@@ -49,7 +49,7 @@ print(f'Dataframe shape after dropping NA: {df.shape}')
 Y = np.asarray(df['recommendation'])
 X = np.asarray(df[['correctness','empirical_novelty_and_significance','technical_novelty_and_significance']])
 
-# empirical_simulation(X,Y, dir_name, name)
+empirical_simulation(X,Y, dir_name, name)
 noise_level(X,Y,name, split = True)
 
 # 2024
@@ -72,7 +72,7 @@ print(f'Dataframe shape after dropping NA: {df.shape}')
 # the y-value is the solution quality, and the x-values are the solution feasibility and novelty
 Y = np.asarray(df['rating'])
 X = np.asarray(df[['soundness','presentation','contribution']])
-# empirical_simulation(X,Y, dir_name, name)
+empirical_simulation(X,Y, dir_name, name)
 noise_level(X,Y,name, split = True)
 
 # 2025
@@ -96,5 +96,5 @@ print(f'Dataframe shape after dropping NA: {df.shape}')
 # the y-value is the solution quality, and the x-values are the solution feasibility and novelty
 Y = np.asarray(df['rating'])
 X = np.asarray(df[['soundness','presentation','contribution']])
-# empirical_simulation(X,Y, dir_name, name)
+empirical_simulation(X,Y, dir_name, name)
 noise_level(X,Y,name, split = True)

@@ -20,7 +20,7 @@ criteria  = df.columns[1:]
 
 Y = np.asarray(df['rating'])
 X = np.asarray(df.iloc[:,1:])
-# empirical_simulation(X,Y, dir_name, name)
+empirical_simulation(X,Y, dir_name, name)
 noise_level(X,Y,name, split = True)
 # -------------------- Business ------------------------------ # 
 df = pd.read_csv('data/hotelrec/reviews_business.csv')
@@ -40,7 +40,7 @@ print(df.shape)
 
 Y = np.asarray(df['rating'])
 X = np.asarray(df[['service','location', 'value', 'cleanliness', 'sleep quality', 'rooms']])
-# empirical_simulation(X,Y, dir_name, name)
+empirical_simulation(X,Y, dir_name, name)
 noise_level(X,Y,name, split = True)
 
 # -------------------- Couples ------------------------------ # 
@@ -61,7 +61,7 @@ print(df.shape)
 
 Y = np.asarray(df['rating'])
 X = np.asarray(df[['service','location', 'value', 'cleanliness', 'sleep quality', 'rooms']])
-# empirical_simulation(X,Y, dir_name, name)
+empirical_simulation(X,Y, dir_name, name)
 noise_level(X,Y,name, split = True)
 
 # -------------------- Family ------------------------------ # 
@@ -83,5 +83,5 @@ print(df.shape)
 Y = np.asarray(df['rating'])
 X = np.asarray(df[['service','location', 'value', 'cleanliness', 'sleep quality', 'rooms']])
 noise_level(X,Y,name, split = True)
-# empirical_simulation(X,Y, dir_name, name)
+empirical_simulation(X,Y, dir_name, name)
 

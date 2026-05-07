@@ -1,45 +1,45 @@
 import pandas as pd
 import numpy as np
-from functions import empirical_simulation, unique_xvals, iso_fit_many, train_test_split, noise_level
+from functions import empirical_simulation, unique_xvals, iso_fit_many, train_test_split, bootstrap_noise
 test_size = 0.2
 min_val = 1
 max_val = 10
 
 # -------------------- GPT ------------------------------ # 
-# dir_name = 'data/LLMs/outputs_gpt/'
+dir_name = 'data/LLMs/outputs_gpt/'
 name = 'GPT-4o'
 df = pd.read_csv('data/LLMs/ICLR2024.gpt-4o_reviews.csv')
 
 print(f'Number of samples is: {df.shape[0]}')
 Y = np.asarray(df['overall'])
 X = np.asarray(df[['soundness', 'presentation', 'contribution']])
-# noise_level(X,Y,min_val, max_val, name)
+bootstrap_noise(X,Y,name, B = 1000)
 print(df.describe())
-# empirical_simulation(X,Y, dir_name, name)
+empirical_simulation(X,Y, dir_name, name)
 
 # # -------------------- Llama ------------------------------ # 
-# dir_name = 'data/LLMs/outputs_llama/'
+dir_name = 'data/LLMs/outputs_llama/'
 name = 'Llama 3.1 70b'
 df = pd.read_csv('data/LLMs/ICLR2024.llama-3.1-70b_reviews.csv')
 
 print(f'Number of samples is: {df.shape[0]}')
 Y = np.asarray(df['overall'])
 X = np.asarray(df[['soundness', 'presentation', 'contribution']])
-# noise_level(X,Y,min_val, max_val, name)
+bootstrap_noise(X,Y,name, B = 1000)
 print(df.describe())
-# empirical_simulation(X,Y, dir_name, name)
+empirical_simulation(X,Y, dir_name, name)
 
 # # -------------------- Human ------------------------------ # 
-# dir_name = 'data/LLMs/outputs_human/'
+dir_name = 'data/LLMs/outputs_human/'
 name = 'Human evaluators'
 df = pd.read_csv('data/LLMs/ICLR2024_human_reviews.csv')
 
 print(f'Number of samples is: {df.shape[0]}')
 Y = np.asarray(df['overall'])
 X = np.asarray(df[['soundness', 'presentation', 'contribution']])
+bootstrap_noise(X,Y,name, B = 1000)
 print(df.describe())
-# noise_level(X,Y,min_val, max_val, name)
-# empirical_simulation(X,Y, dir_name, name)
+empirical_simulation(X,Y, dir_name, name)
 
 # -------------------- Function distance ------------------------------ # 
 df_llama = pd.read_csv('data/LLMs/outputs_llama/cv_df.csv')

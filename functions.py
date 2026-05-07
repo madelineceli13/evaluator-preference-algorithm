@@ -368,7 +368,7 @@ def unique_xvals(num_vals, num_criteria):
     X_grid = np.vstack([g.ravel() for g in mesh]).T  # stack and transpose to get shape (n^d, d)
     return X_grid
 
-def noise_level(X,Y,name, split = False, min_val=-1, max_val=-1):
+def noise_level(X,Y,name, split = False, min_val=-1, max_val=-1, bootstrap = False):
     if min_val == -1:
         min_val = np.min(Y)
         max_val = np.max(Y)
@@ -385,6 +385,28 @@ def noise_level(X,Y,name, split = False, min_val=-1, max_val=-1):
         'se_noise': [np.std(residuals)/np.sqrt(len(Y))]
 
     })
-    df_row.to_csv(f'results/noise_summary.csv', mode='a', header=False, index=False)
+    if bootstrap == False:
+        df_row.to_csv(f'results/noise_summary.csv', mode='a', header=False, index=False)
+        return residuals 
+    else:
+       return np.mean(residuals)
 
-    return residuals 
+
+from sklearn.utils import resample
+def bootstrap_noise(X,Y,name, B = 1000):
+   df = pd.DataFrame({
+       'number': [],
+       'mean_noise': [],
+   })
+   df.to_csv(f'results/bootstrap_noise_summary_{name}.csv', index=False)
+   samples = []
+   for i in range(B):
+        X_sample, Y_sample = resample(X, Y, replace=True, random_state=i)
+        noise_sample =noise_level(X_sample, Y_sample, name = f'{name}_bootstrap_{i}', split = False, bootstrap = True)
+        samples.append(noise_sample)
+        df_row = pd.DataFrame({
+            'number': [i],
+            'mean_noise': [noise_sample],
+        })
+        df_row.to_csv(f'results/bootstrap_noise_summary_{name}.csv', mode='a', header=False, index=False)
+   return samples

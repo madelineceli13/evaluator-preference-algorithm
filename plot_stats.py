@@ -6,7 +6,7 @@ plt.rcParams['font.size'] = 24
 plt.rcParams['font.family'] = 'Times New Roman'
 
 def plot(start, stop, title):
-    df = pd.read_csv('empirical_stats.csv').iloc[start:stop]
+    df = pd.read_csv('results/empirical_stats.csv').iloc[start:stop]
 
     ci_lin = 1.96 * df['SE_lin']
     ci_cv  = 1.96 * df['SE_cv']
@@ -94,10 +94,10 @@ def plot_noise():
     plt.savefig('plots/noise_results.png', dpi=300, bbox_inches='tight')
     # plt.show()
 
-plot_noise()
+# plot_noise()
 
 def plot_alignment():
-    df = pd.read_csv('residuals_human.csv')
+    df = pd.read_csv('results/residuals_human.csv')
     ci = 1.96 * df['se']
     x  = np.arange(len(df))
 
@@ -122,16 +122,14 @@ def plot_alignment():
     plt.savefig('plots/alignment.png', dpi=300, bbox_inches='tight')
     plt.show()
 
-plot_alignment()
+#plot_alignment()
 
 def plot_noise_and_alignment():
-    df_noise = pd.read_csv('noise_summary.csv')
-    df_align = pd.read_csv('residuals_human.csv')
+    df_align = pd.read_csv('results/residuals_human.csv')
+    df_noise = pd.read_csv('results/irreducible_error.csv')
 
-    ci_noise = 1.96 * df_noise['se_noise']
     ci_align = 1.96 * df_align['se']
 
-    x_noise = np.arange(len(df_noise))
     x_align = np.arange(len(df_align))
 
     w = max(len(df_noise), len(df_align))
@@ -151,13 +149,21 @@ def plot_noise_and_alignment():
         error_kw  = {'linewidth': 2, 'ecolor': 'grey'},
     )
 
+
+    x_noise = np.arange(len(df_noise))
+
+    yerr_noise = np.array([
+        df_noise['mean_noise'] - df_noise['lower_ci'],  # lower error
+        df_noise['upper_ci'] - df_noise['mean_noise'],  # upper error
+    ])
     # ── Left subplot: Noise ──────────────────────────────────────────────
     ax1.bar(x_noise, df_noise['mean_noise'], color='thistle', hatch='|',
-            yerr=ci_noise, **bar_kwargs)
+            yerr=yerr_noise, **bar_kwargs)
     ax1.set_ylabel('Irreducible error')
     ax1.set_xticks(x_noise)
     ax1.set_xticklabels(df_noise['name'], rotation=15, ha='center')
     ax1.grid(axis='y', alpha=0.3, linestyle='--')
+    ax1.set_xlim(-0.5, len(df_noise) - 0.5)
 
     # ── Right subplot: Alignment ─────────────────────────────────────────
     ax2.bar(x_align, df_align['mean'], color='lightblue', hatch='.',
