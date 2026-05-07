@@ -69,7 +69,7 @@ python synthetic_simulations.py
 ```
 
 ### Figures
-Reproduces all figures in the paper: use plot_synthetic (for synthetic simulations), plots_stats (for other plots), plot_understanding (for criteria plot in the appendix)
+Reproduces all figures in the paper: use plot_synthetic (for synthetic simulations), plot_understanding (for criteria plot in the appendix for the Tripadvisor data), plots (for other plots)
 
 ## Computational Requirements
 

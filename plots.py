@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-plt.rcParams['font.size'] = 28
+plt.rcParams['font.size'] = 30
 plt.rcParams['font.family'] = 'Times New Roman'
 
 # ── Shared constants ─────────────────────────────────────────────────────────
@@ -64,8 +64,8 @@ plot(4, 8, 'trip_advisor')
 
 
 def plot_noise_and_alignment():
-    df_noise = pd.read_csv('noise_summary.csv')
-    df_align = pd.read_csv('residuals_human.csv')
+    df_noise = pd.read_csv('results/irreducible_error.csv')
+    df_align = pd.read_csv('results/residuals_human.csv')
 
     ci_noise = 1.96 * df_noise['se_noise']
     ci_align = 1.96 * df_align['se']
@@ -83,14 +83,20 @@ def plot_noise_and_alignment():
         sharey=False,
     )
 
-    # ── Left subplot: Noise ──────────────────────────────────────────────────
+    x_noise = np.arange(len(df_noise))
+
+    yerr_noise = np.array([
+        df_noise['mean_noise'] - df_noise['lower_ci'],  # lower error
+        df_noise['upper_ci'] - df_noise['mean_noise'],  # upper error
+    ])
+    # ── Left subplot: Noise ──────────────────────────────────────────────
     ax1.bar(x_noise, df_noise['mean_noise'], color='thistle', hatch='|',
-            yerr=ci_noise, **BAR_KWARGS)
+            yerr=yerr_noise, **bar_kwargs)
     ax1.set_ylabel('Irreducible error')
     ax1.set_xticks(x_noise)
     ax1.set_xticklabels(df_noise['name'], rotation=15, ha='center')
     ax1.grid(axis='y', alpha=0.3, linestyle='--')
-    ax1.set_xlim(-0.5, n_noise - 0.5)
+    ax1.set_xlim(-0.5, len(df_noise) - 0.5)
 
     # ── Right subplot: Alignment ─────────────────────────────────────────────
     ax2.bar(x_align, df_align['mean'], color='lightblue', hatch='.',
