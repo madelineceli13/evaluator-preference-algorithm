@@ -1,0 +1,9 @@
+num_samples,train_mse,test_mse,lambda_star
+num_samples,train_mse,test_mse,lambda_star
+1000,0.1970856393780159,0.24063000582863533,1.0
+num_samples,train_mse,test_mse,lambda_star
+10000,0.20497269544934646,0.21539440469388718,0.03125
+num_samples,train_mse,test_mse,lambda_star
+20000,0.20708264865439063,0.2137692307876954,0.125
+num_samples,train_mse,test_mse,lambda_star
+50000,0.20107426886392923,0.22776910162240066,0.0

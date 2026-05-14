@@ -1,4 +1,5 @@
 # packages
+from email.policy import default
 import numpy as np
 import cvxpy as cvx
 import pandas as pd
@@ -207,7 +208,7 @@ def cross_validation(X_train, Y_train, X_test, Y_test, y_min, y_max, Lambda = La
       if save:
         df.to_csv(f'{dir_name}_{lam}_df.csv', index=False)   
     else:
-      df, MSE_train, MSE_val = linear_regression_analysis(X_train_CV, Y_train_CV, X_val, Y_val, y_min = 0, y_max = 1,printer_friend = False, CV = True)
+      df, MSE_train, MSE_val = linear_regression_analysis(X_train_CV, Y_train_CV, X_val, Y_val, y_min = y_min, y_max = y_max, printer_friend = False, CV = True)
     if save:
       summary_dict = {'lambda': lam, 'train_mse': MSE_train, 'val_mse': MSE_val}
       df_row = pd.DataFrame([summary_dict])
@@ -221,7 +222,7 @@ def cross_validation(X_train, Y_train, X_test, Y_test, y_min, y_max, Lambda = La
   if lam_star != np.inf:
     df, MSE_train, MSE_test = isotonic_regression_analysis(X_train, Y_train, X_test, Y_test, lam = lam_star, y_min = y_min, y_max = y_max, printer_friend = False)       
   else:
-    df, MSE_train, MSE_test = linear_regression_analysis(X_train, Y_train, X_test, Y_test, y_min = 0, y_max = 1,printer_friend = False, CV = True)
+    df, MSE_train, MSE_test = linear_regression_analysis(X_train, Y_train, X_test, Y_test, y_min = y_min, y_max = y_max, printer_friend = False, CV = True)
   end = time.time()
   print(f"Solve time: {end-start}")
   print("---------------------------------")
@@ -241,7 +242,7 @@ def empirical_simulation(X,Y, dir_name, name, test_size = 0.2):
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test_size, random_state=42)
 
     # linear regression 
-    coefficients, train_mse_lin, test_mse_lin = linear_regression_analysis(X_train, Y_train, X_test, Y_test, y_min=0, y_max =1, printer_friend= True)
+    coefficients, train_mse_lin, test_mse_lin = linear_regression_analysis(X_train, Y_train, X_test, Y_test, y_min=y_min, y_max=y_max, printer_friend= True)
 
     # CV regression
     train_mse_CV, test_mse_CV, df_CV, lam = cross_validation(X_train, Y_train, X_test, Y_test, y_min, y_max, Lambda = Lambda, save = True, dir_name = dir_name)
@@ -268,14 +269,16 @@ def compute_empirical_stats(df, X_test, Y_test, dir_name, a):
     MSE_lin = np.mean(errors)
     SE_lin = np.std(errors) / np.sqrt(len(Y_test))
     print(np.std(errors))
-    noise = noise_level(X_test, Y_test, y_min = np.min(Y_test), y_max = np.max(Y_test), name = dir_name)
+    y_min = np.min(Y_test)
+    y_max = np.max(Y_test)
+    noise = noise_level(X_test, Y_test, y_min = y_min, y_max = y_max, name = dir_name)
     summary_dict = {
                 'Name': dir_name,
                 'MSE_lin': MSE_lin,
                 'SE_lin': SE_lin, 
                 'MSE_cv':MSE_cv,
                 'SE_cv': SE_cv,
-                'noise': noise,
+                'noise': np.mean(noise),
             }
     df_row = pd.DataFrame([summary_dict])
 
@@ -368,16 +371,16 @@ def unique_xvals(num_vals, num_criteria):
     X_grid = np.vstack([g.ravel() for g in mesh]).T  # stack and transpose to get shape (n^d, d)
     return X_grid
 
-def noise_level(X,Y,name, split = False, min_val=-1, max_val=-1, bootstrap = False):
-    if min_val == -1:
-        min_val = np.min(Y)
-        max_val = np.max(Y)
+def noise_level(X,Y,name, split = False, y_min=-1, y_max=-1, bootstrap = False):
+    if y_min == -1:
+        y_min = np.min(Y)
+        y_max = np.max(Y)
     if split == True:
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
         X = X_test
         Y = Y_test
     # Compute the noise level as the standard deviation of the residuals
-    (unique_x_vals, f_values) = isotonic_regression(X, Y, 0, min_val, max_val)
+    (unique_x_vals, f_values) = isotonic_regression(X, Y, 0, y_min, y_max)
     residuals = (Y - iso_fit_many(X, unique_x_vals, f_values))**2
     df_row = pd.DataFrame({
        'name': name,
@@ -410,3 +413,28 @@ def bootstrap_noise(X,Y,name, B = 1000):
         })
         df_row.to_csv(f'results/bootstrap_noise_summary_{name}.csv', mode='a', header=False, index=False)
    return samples
+
+def bootstrap_function_estimation(X,Y, dir_name, B = 1000, N=None):
+  if N is None:
+      N = X.shape[0]
+  master_df = None
+  n_input_cols = X.shape[1]
+  input_cols = [f'x{j}' for j in range(n_input_cols)]
+  y_min = np.min(Y)
+  y_max = np.max(Y)
+  for i in range(B):
+    if master_df is not None:
+      print(f"Iteration {i}, master_df shape: {master_df.shape}")
+
+    col = f'boot_{i:04d}'
+    X_sample, Y_sample = resample(X, Y, replace=True, random_state=i, n_samples=N)
+    
+    _, _, df_resample, _ = cross_validation(X_sample, Y_sample, X_sample, Y_sample, y_min = y_min, y_max = y_max, save = False)
+    df_resample.columns = input_cols + [col]
+    if master_df is None:
+          master_df = df_resample
+    else:
+          master_df = master_df.merge(df_resample, on=input_cols, how='outer')
+    
+    master_df.to_csv(f'{dir_name}bootstrap_function.csv', index=False)
+  return master_df

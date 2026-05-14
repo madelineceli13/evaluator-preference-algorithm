@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from functions import empirical_simulation, noise_level
+from functions import empirical_simulation, noise_level, bootstrap_function_estimation
 
 # -------------------- All - 2019 ------------------------------ # 
 dir_name = 'data/hotelrec/outputs_all_2019/'
@@ -22,6 +22,7 @@ Y = np.asarray(df['rating'])
 X = np.asarray(df.iloc[:,1:])
 empirical_simulation(X,Y, dir_name, name)
 noise_level(X,Y,name, split = True)
+
 # -------------------- Business ------------------------------ # 
 df = pd.read_csv('data/hotelrec/reviews_business.csv')
 df = df[df['year']>=2014]
@@ -41,7 +42,7 @@ print(df.shape)
 Y = np.asarray(df['rating'])
 X = np.asarray(df[['service','location', 'value', 'cleanliness', 'sleep quality', 'rooms']])
 empirical_simulation(X,Y, dir_name, name)
-noise_level(X,Y,name, split = True)
+#noise_level(X,Y,name, split = True)
 
 # -------------------- Couples ------------------------------ # 
 df = pd.read_csv('data/hotelrec/reviews_couple.csv')
@@ -62,7 +63,7 @@ print(df.shape)
 Y = np.asarray(df['rating'])
 X = np.asarray(df[['service','location', 'value', 'cleanliness', 'sleep quality', 'rooms']])
 empirical_simulation(X,Y, dir_name, name)
-noise_level(X,Y,name, split = True)
+#noise_level(X,Y,name, split = True)
 
 # -------------------- Family ------------------------------ # 
 df = pd.read_csv('data/hotelrec/reviews_family.csv')
@@ -82,6 +83,6 @@ print(df.shape)
 
 Y = np.asarray(df['rating'])
 X = np.asarray(df[['service','location', 'value', 'cleanliness', 'sleep quality', 'rooms']])
-noise_level(X,Y,name, split = True)
+#noise_level(X,Y,name, split = True)
 empirical_simulation(X,Y, dir_name, name)
 

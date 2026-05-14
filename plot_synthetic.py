@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 plt.rcParams['font.size'] = 24
-fontsize = 20
+fontsize = 24
 plt.rcParams['font.family'] = 'Times New Roman'
 extensions = 'd_2_n_5'
 def get_data(function_name):
@@ -32,7 +32,7 @@ def get_data(function_name):
     return df_lin, df_CV, xs
 
 
-fig, (ax_lin, ax_cd, ax_leon) = plt.subplots(1, 3, figsize=(20, 6), sharex=True, sharey=True)
+fig, (ax_lin, ax_cd, ax_leon) = plt.subplots(1, 3, figsize=(15, 5), sharex=True, sharey=True)
 
 # Linear plot
 (df_lin, df_CV, xs) = get_data('linear')
@@ -77,6 +77,6 @@ fig.legend(handles, labels, loc='lower center', bbox_to_anchor=(0.5, 0.0),
 
 # fig.legend(handles, labels, loc='upper right',frameon=True)
 plt.tight_layout()
-plt.subplots_adjust(bottom=0.25, top=0.92, left = 0.1)  # Make room for shared xlabel and legend
+plt.subplots_adjust(bottom=0.3, top=0.92, left = 0.1)  # Make room for shared xlabel and legend
 plt.savefig(f'plots/linear_CV_comparison.png', bbox_inches='tight', dpi=300)
 plt.show()

@@ -6,7 +6,7 @@ from functions import empirical_simulation, noise_level
 dir_name = 'data/NASA/outputs/'
 name = 'NASA'
 # some data checks to make sure everything is reasonable
-df = pd.read_csv('data/NASA/solver_evaluator_pairs_13.csv')
+df = pd.read_csv('data/NASA/outputs/solver_evaluator_pairs_13.csv')
 
 print(df.head())
 
@@ -21,7 +21,7 @@ Y = np.asarray(df['solution_quality'])
 X = np.asarray(df[['solution_feasibility', 'solution_novelty']])
 
 empirical_simulation(X,Y, dir_name, name)
-noise_level(X,Y,name, split = True)
+# noise_level(X,Y,name, split = True)
 
 # -------------------- ICLR ------------------------------ # 
 # 2023
@@ -50,7 +50,7 @@ Y = np.asarray(df['recommendation'])
 X = np.asarray(df[['correctness','empirical_novelty_and_significance','technical_novelty_and_significance']])
 
 empirical_simulation(X,Y, dir_name, name)
-noise_level(X,Y,name, split = True)
+# noise_level(X,Y,name, split = True)
 
 # 2024
 dir_name = 'data/ICLR/outputs_2024/'
@@ -73,7 +73,7 @@ print(f'Dataframe shape after dropping NA: {df.shape}')
 Y = np.asarray(df['rating'])
 X = np.asarray(df[['soundness','presentation','contribution']])
 empirical_simulation(X,Y, dir_name, name)
-noise_level(X,Y,name, split = True)
+# noise_level(X,Y,name, split = True)
 
 # 2025
 dir_name = 'data/ICLR/outputs_2025/'
@@ -97,4 +97,4 @@ print(f'Dataframe shape after dropping NA: {df.shape}')
 Y = np.asarray(df['rating'])
 X = np.asarray(df[['soundness','presentation','contribution']])
 empirical_simulation(X,Y, dir_name, name)
-noise_level(X,Y,name, split = True)
+# noise_level(X,Y,name, split = True)

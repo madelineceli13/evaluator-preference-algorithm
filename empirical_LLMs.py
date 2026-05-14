@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from functions import empirical_simulation, unique_xvals, iso_fit_many, train_test_split, bootstrap_noise
+from functions import empirical_simulation, iso_fit_many, bootstrap_function_estimation, bootstrap_noise
 test_size = 0.2
 min_val = 1
 max_val = 10
@@ -13,10 +13,10 @@ df = pd.read_csv('data/LLMs/ICLR2024.gpt-4o_reviews.csv')
 print(f'Number of samples is: {df.shape[0]}')
 Y = np.asarray(df['overall'])
 X = np.asarray(df[['soundness', 'presentation', 'contribution']])
-bootstrap_noise(X,Y,name, B = 1000)
+# bootstrap_noise(X,Y,name, B = 1000)
 print(df.describe())
 empirical_simulation(X,Y, dir_name, name)
-
+bootstrap_function_estimation(X,Y, dir_name)
 # # -------------------- Llama ------------------------------ # 
 dir_name = 'data/LLMs/outputs_llama/'
 name = 'Llama 3.1 70b'
@@ -25,9 +25,10 @@ df = pd.read_csv('data/LLMs/ICLR2024.llama-3.1-70b_reviews.csv')
 print(f'Number of samples is: {df.shape[0]}')
 Y = np.asarray(df['overall'])
 X = np.asarray(df[['soundness', 'presentation', 'contribution']])
-bootstrap_noise(X,Y,name, B = 1000)
+# bootstrap_noise(X,Y,name, B = 1000)
 print(df.describe())
 empirical_simulation(X,Y, dir_name, name)
+bootstrap_function_estimation(X,Y, dir_name)
 
 # # -------------------- Human ------------------------------ # 
 dir_name = 'data/LLMs/outputs_human/'
@@ -37,9 +38,10 @@ df = pd.read_csv('data/LLMs/ICLR2024_human_reviews.csv')
 print(f'Number of samples is: {df.shape[0]}')
 Y = np.asarray(df['overall'])
 X = np.asarray(df[['soundness', 'presentation', 'contribution']])
-bootstrap_noise(X,Y,name, B = 1000)
+# bootstrap_noise(X,Y,name, B = 1000)
 print(df.describe())
 empirical_simulation(X,Y, dir_name, name)
+bootstrap_function_estimation(X,Y, dir_name)
 
 # -------------------- Function distance ------------------------------ # 
 df_llama = pd.read_csv('data/LLMs/outputs_llama/cv_df.csv')

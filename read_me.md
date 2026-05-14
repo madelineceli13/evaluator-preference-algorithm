@@ -65,7 +65,7 @@ python empirical_LLMs.py
 Reproduces the synthetic preference simulations (linear, Cobb-Douglas, and Leontief utilities) from the appendix:
 
 ```bash
-python synthetic_simulations.py
+python empirical_synthetic.py
 ```
 
 ### Figures
