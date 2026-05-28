@@ -1,5 +1,6 @@
 # packages
 from email.policy import default
+import os
 import numpy as np
 import cvxpy as cvx
 import pandas as pd
@@ -235,7 +236,7 @@ def cross_validation(X_train, Y_train, X_test, Y_test, y_min, y_max, Lambda = La
   return MSE_train, MSE_test, df, lam_star
 
 
-def empirical_simulation(X,Y, dir_name, name, test_size = 0.2):
+def empirical_simulation(X,Y, dir_name, name, test_size = 0.2, nasa_expertise = False):
     y_min = Y.min()
     y_max = Y.max()
     start_time = time.time()
@@ -248,17 +249,23 @@ def empirical_simulation(X,Y, dir_name, name, test_size = 0.2):
     train_mse_CV, test_mse_CV, df_CV, lam = cross_validation(X_train, Y_train, X_test, Y_test, y_min, y_max, Lambda = Lambda, save = True, dir_name = dir_name)
     
     if lam!=np.inf:
-        df_CV.to_csv(f'{dir_name}cv_df.csv')   
-    df = pd.read_csv(f'{dir_name}cv_df.csv')
-    compute_empirical_stats(df, X_test, Y_test, name, coefficients)
-
+      df_CV.to_csv(f'{dir_name}cv_df.csv')   
+      df = pd.read_csv(f'{dir_name}cv_df.csv')
+    else:
+      df = None
     end_time = time.time()
     print(f'total time is {end_time - start_time} seconds')
+
+    if nasa_expertise:
+       compute_empirical_stats_nasa(df, X_test, Y_test, name, coefficients, lam, N = Y.shape[0])
+    else:
+       compute_empirical_stats(df, X_test, Y_test, name, coefficients)
+
     return coefficients
 
 
 ## compute summary statistics
-def compute_empirical_stats(df, X_test, Y_test, dir_name, a):
+def compute_empirical_stats(df, X_test, Y_test, dir_name, a, lam = None, N = None):
     x_vals, f_vals = np.asarray(df.iloc[:, 1:-1]), np.asarray(df.iloc[:,-1])
     errors = error_isotonic(X_test, Y_test, x_vals, f_vals)
     MSE_cv = np.mean(errors)
@@ -281,26 +288,36 @@ def compute_empirical_stats(df, X_test, Y_test, dir_name, a):
                 'noise': np.mean(noise),
             }
     df_row = pd.DataFrame([summary_dict])
-
     # Append to CSV without headers and without index column
     df_row.to_csv('results/empirical_stats.csv', mode='a', header=False, index=False)
 
-# old method for computing noise
-# def compute_variances(X,Y):
-#     unique_vals = np.unique(X, axis=0)
-#     n = X.shape[0]
-#     EV = 0
-#     total_number = 0
-#     for x in unique_vals:
-#         indices = np.where((X == x).all(axis=1))[0]
-#         if len(indices) > 1:
-#             variance = np.var(Y[indices]) #-np.mean(Y[indices]))**2/(len(indices)-1)
-#         else:
-#             variance = 0
-#         EV += variance * len(indices)
-#         total_number += len(indices)
-#     print(f'Expected Variance: {EV / total_number}')
-#     return EV / n
+def compute_empirical_stats_nasa(df, X_test, Y_test, dir_name, a, lam, N):
+
+    if df is None:
+      Y_hat =  X_test @ a[0] + a[1]
+      errors = (Y_hat - Y_test) ** 2
+      MSE_cv = np.mean(errors)
+      SE_cv = np.std(errors) / np.sqrt(len(Y_test))
+    else:
+      x_vals, f_vals = np.asarray(df.iloc[:, 1:-1]), np.asarray(df.iloc[:,-1])
+      errors = error_isotonic(X_test, Y_test, x_vals, f_vals)
+      MSE_cv = np.mean(errors)
+      SE_cv = np.std(errors) / np.sqrt(len(Y_test))
+
+    y_min = np.min(Y_test)
+    y_max = np.max(Y_test)
+    noise = noise_level(X_test, Y_test, y_min = y_min, y_max = y_max, name = dir_name)
+    summary_dict = {
+                'Name': dir_name,
+                'MSE_cv':MSE_cv,
+                'SE_cv': SE_cv,
+                'noise': np.mean(noise),
+                'Lambda': lam,
+                'N': N
+            }
+    df_row = pd.DataFrame([summary_dict])
+    file_path = 'results/nasa_evaluator_stats.csv'
+    df_row.to_csv(file_path, mode='a', header=not os.path.exists(file_path), index=False)
 
 
 def error_isotonic(X_vals, Y_vals, x_vals, f_vals):
