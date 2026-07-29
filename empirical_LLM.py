@@ -8,35 +8,37 @@ max_val = 10
 # -------------------- GPT ------------------------------ # 
 dir_name = 'data/LLMs/outputs_gpt/'
 name = 'GPT-4o'
-df = pd.read_csv('data/LLMs/ICLR2024.gpt-4o_reviews.csv')
+df = pd.read_csv('../data/LLM reviews/ICLR2024.gpt-4o_reviews.csv')
+print(df.head())
+print(df.columns)
 
 print(f'Number of samples is: {df.shape[0]}')
 Y = np.asarray(df['overall'])
 X = np.asarray(df[['soundness', 'presentation', 'contribution']])
-bootstrap_noise(X,Y,name, B = 1000)
+# bootstrap_noise(X,Y,name, B = 1000)
 print(df.describe())
 empirical_simulation(X,Y, dir_name, name)
 # # -------------------- Llama ------------------------------ # 
 dir_name = 'data/LLMs/outputs_llama/'
 name = 'Llama 3.1 70b'
-df = pd.read_csv('data/LLMs/ICLR2024.llama-3.1-70b_reviews.csv')
+df = pd.read_csv('../data/LLM reviews/ICLR2024.llama-3.1-70b_reviews.csv')
 
 print(f'Number of samples is: {df.shape[0]}')
 Y = np.asarray(df['overall'])
 X = np.asarray(df[['soundness', 'presentation', 'contribution']])
-bootstrap_noise(X,Y,name, B = 1000)
+# bootstrap_noise(X,Y,name, B = 1000)
 print(df.describe())
 empirical_simulation(X,Y, dir_name, name)
 
 # # -------------------- Human ------------------------------ # 
 dir_name = 'data/LLMs/outputs_human/'
 name = 'Human evaluators'
-df = pd.read_csv('data/LLMs/ICLR2024_human_reviews.csv')
+df = pd.read_csv('../data/LLM reviews/ICLR2024_human_reviews.csv')
 
 print(f'Number of samples is: {df.shape[0]}')
 Y = np.asarray(df['overall'])
 X = np.asarray(df[['soundness', 'presentation', 'contribution']])
-bootstrap_noise(X,Y,name, B = 1000)
+# bootstrap_noise(X,Y,name, B = 1000)
 print(df.describe())
 empirical_simulation(X,Y, dir_name, name)
 
@@ -58,9 +60,8 @@ x_vals, f_vals = np.asarray(df_llama.iloc[:, 1:-1]), np.asarray(df_llama.iloc[:,
 y_guess_llama = iso_fit_many(X_grid, x_vals, f_vals)
 
 
-print(f"Distance between GPT-4o and Human: {np.mean((y_guess_gpt - y_guess_human)**2):.4f}")
-print(f"Distance between Llama-3.1-70b and Human: {np.mean((y_guess_llama - y_guess_human)**2):.4f}")
-print(f"Distance between Llama-3.1-70b and GPT-4o: {np.mean((y_guess_llama - y_guess_gpt)**2):.4f}")
+print(f"Distance between GPT-4o and Human: {np.mean((y_guess_gpt - y_guess_human)**2)}")
+print(f"Distance between Llama-3.1-70b and Human: {np.mean((y_guess_llama - y_guess_human)**2)}")
 
 print(f"Distance between GPT-4o and Human: {np.mean((y_guess_gpt - y_guess_human)**2):.4f}")
 residuals = {

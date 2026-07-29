@@ -255,17 +255,20 @@ def empirical_simulation(X,Y, dir_name, name, test_size = 0.2, nasa_expertise = 
       df = None
     end_time = time.time()
     print(f'total time is {end_time - start_time} seconds')
-
+    
+    df_iso, MSE_train_iso, MSE_test_iso = isotonic_regression_analysis(X_train, Y_train, X_test, Y_test, lam = 0, y_min = y_min, y_max = y_max, printer_friend = False)
+    
     if nasa_expertise:
        compute_empirical_stats_nasa(df, X_test, Y_test, name, coefficients, lam, N = Y.shape[0])
     else:
-       compute_empirical_stats(df, X_test, Y_test, name, coefficients)
-
+       compute_empirical_stats(df, X_test, Y_test, name, coefficients, df_iso, Y_train, lam = lam)
+    
     return coefficients
 
 
 ## compute summary statistics
-def compute_empirical_stats(df, X_test, Y_test, dir_name, a, lam = None, N = None):
+def compute_empirical_stats(df, X_test, Y_test, name, a, df_iso, Y_train, lam = None):
+    
     x_vals, f_vals = np.asarray(df.iloc[:, 1:-1]), np.asarray(df.iloc[:,-1])
     errors = error_isotonic(X_test, Y_test, x_vals, f_vals)
     MSE_cv = np.mean(errors)
@@ -278,18 +281,36 @@ def compute_empirical_stats(df, X_test, Y_test, dir_name, a, lam = None, N = Non
     print(np.std(errors))
     y_min = np.min(Y_test)
     y_max = np.max(Y_test)
-    noise = noise_level(X_test, Y_test, y_min = y_min, y_max = y_max, name = dir_name)
+
+    noise = noise_level(X_test, Y_test, y_min = y_min, y_max = y_max, name = name)
+    x_vals_iso, f_vals_iso = np.asarray(df_iso.iloc[:, :-1]), np.asarray(df_iso.iloc[:,-1])
+    errors =  error_isotonic(X_test, Y_test, x_vals_iso, f_vals_iso)
+    MSE_iso = np.mean(errors)
+    SE_iso = np.std(errors) / np.sqrt(len(Y_test))
+    
+    Y_con = np.mean(Y_train)
+    errors = (Y_con - Y_test) ** 2
+    MSE_con = np.mean(errors)
+    SE_con = np.std(errors) / np.sqrt(len(Y_test))
+
     summary_dict = {
-                'Name': dir_name,
+                'Name': name,
                 'MSE_lin': MSE_lin,
                 'SE_lin': SE_lin, 
                 'MSE_cv':MSE_cv,
                 'SE_cv': SE_cv,
+                'MSE_iso': MSE_iso,
+                'SE_iso': SE_iso,
+                'MSE_constant': MSE_con,
+                'SE_constant': SE_con,
                 'noise': np.mean(noise),
+                'lambda':lam
             }
+    
     df_row = pd.DataFrame([summary_dict])
     # Append to CSV without headers and without index column
-    df_row.to_csv('results/empirical_stats.csv', mode='a', header=False, index=False)
+    file_exists = os.path.exists('results/empirical_stats_rebuttal.csv')
+    df_row.to_csv('results/empirical_stats_rebuttal.csv', mode='a', header= not file_exists, index=False)
 
 def compute_empirical_stats_nasa(df, X_test, Y_test, dir_name, a, lam, N):
 
@@ -318,6 +339,21 @@ def compute_empirical_stats_nasa(df, X_test, Y_test, dir_name, a, lam, N):
     df_row = pd.DataFrame([summary_dict])
     file_path = 'results/nasa_evaluator_stats.csv'
     df_row.to_csv(file_path, mode='a', header=not os.path.exists(file_path), index=False)
+    
+
+def additional_simulations(X,Y,dir_name, name):
+  y_min = Y.min()
+  y_max = Y.max()
+  X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+  df_iso, MSE_train_iso, MSE_test_iso = isotonic_regression_analysis(X_train, Y_train, X_test, Y_test, 0, y_min, y_max, printer_friend = True)
+  df_CV = pd.read_csv(f'{dir_name}cv_df.csv')
+  a, train_mse_lin, test_mse_lin = linear_regression_analysis(X_train, Y_train, X_test, Y_test, y_min=y_min, y_max=y_max, printer_friend= True)
+  df = pd.read_csv(f'{dir_name}CV_summary.csv')
+  i = df['val_mse'].idxmin()
+  lam = df.loc[i, "lambda"]
+  compute_empirical_stats(df_CV, X_test, Y_test, name, a, df_iso, Y_train, lam = lam)
+
+  
 
 
 def error_isotonic(X_vals, Y_vals, x_vals, f_vals):

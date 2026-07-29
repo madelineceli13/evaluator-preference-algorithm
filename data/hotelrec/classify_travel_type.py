@@ -4,6 +4,9 @@ import re
 import time
 from datetime import datetime
 
+
+# construct full final reviews dataset 
+
 def classify_trip_type(text):
     """
     Classify hotel review by trip type based on textual cues.
@@ -341,7 +344,7 @@ def validate_sample(df, text_column='text', sample_size=200):
 if __name__ == "__main__":
     # Load your data
     print("Loading data...")
-    df = pd.read_csv('data/hotelrec/subset/final_reviews_full.csv')  # Replace with your filename
+    df = pd.read_csv('../data/hotelrec_data/final_reviews_full.csv')  # Replace with your filename
     
     # Optional: Run on a small sample first to validate
     RUN_SAMPLE_FIRST = True
@@ -370,7 +373,7 @@ if __name__ == "__main__":
         text_column='text',
         batch_size=100000,  # Process 100K rows at a time
         checkpoint_dir='checkpoints',
-        output_file='reviews_labeled_travel_type.csv'
+        output_file='../data/hotelrec_data/reviews_labeled_travel_type.csv'
     )
     
     # Show validation sample from full dataset
@@ -385,11 +388,17 @@ print("LOADING CLASSIFIED REVIEWS BY TRIP TYPE")
 print("="*70)
 
 # Load each CSV file
-df_family = pd.read_csv('data/hotelrec/reviews_family.csv')
-df_business = pd.read_csv('data/hotelrec/reviews_business.csv')
-df_couple = pd.read_csv('data/hotelrec/reviews_couple.csv')
-df_friends = pd.read_csv('data/hotelrec/reviews_friends.csv')
-df_solo = pd.read_csv('data/hotelrec/reviews_solo.csv')
+df = pd.read_csv('../data/hotelrec_data/reviews_labeled_travel_type.csv')
+df_family = df[df['trip_type']=='family']
+df_family.to_csv('../data/hotelrec_data/reviews_family.csv')
+df_business = df[df['trip_type']=='business']
+df_business.to_csv('../data/hotelrec_data/reviews_business.csv')
+df_couple = df[df['trip_type']=='couple']
+df_couple.to_csv('../data/hotelrec_data/reviews_couple.csv')
+df_friends = df[df['trip_type']=='friends']
+df_friends.to_csv('../data/hotelrec_data/reviews_friends.csv')
+df_solo = df[df['trip_type']=='solo']
+df_solo.to_csv('../data/hotelrec_data/reviews_solo.csv')
 
 print("\nFiles loaded successfully!")
 print(f"  Family: {len(df_family):,} reviews")
@@ -438,3 +447,22 @@ for category_name, category_df in categories.items():
         print("-"*70)
 
 print("\n✅ COMPLETE!")
+
+# create seperate dfs for each travel type
+df = pd.read_csv('../data/hotelrec_data/reviews_labeled_travel_type.csv')
+
+
+df_all = df[df['year']>=2019]
+print(f'There are {df_all.shape[0]} samples')
+
+df_family = df[df['trip_type']=='family']
+print(f'There are {df_family.shape[0]} samples')
+df_family.to_csv('../data/hotelrec_data/reviews_family.csv')
+
+df_business = df[df['trip_type']=='business']
+print(f'There are {df_business.shape[0]} samples')
+df_business.to_csv('../data/hotelrec_data/reviews_business.csv')
+
+df_couples = df[df['trip_type']=='couple']
+print(f'There are {df_couples.shape[0]} samples')
+df_couples.to_csv('../data/hotelrec_data/reviews_couple.csv')

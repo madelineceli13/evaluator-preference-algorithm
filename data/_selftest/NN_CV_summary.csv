@@ -1,0 +1,9 @@
+config,train_mse,val_mse
+"{'activation': 'elu', 'depth': 1, 'hidden': 32, 'lr': 0.01, 'max_epochs': 300, 'patience': 40, 'weight_decay': 0.0001}",0.0398970280911127,0.04065476869587613
+"{'activation': 'elu', 'depth': 1, 'hidden': 32, 'lr': 0.001, 'max_epochs': 300, 'patience': 40, 'weight_decay': 0.0001}",0.04271196522762568,0.04471897014561949
+"{'activation': 'elu', 'depth': 1, 'hidden': 64, 'lr': 0.01, 'max_epochs': 300, 'patience': 40, 'weight_decay': 0.0001}",0.040002224486170156,0.04067000780910027
+"{'activation': 'elu', 'depth': 1, 'hidden': 64, 'lr': 0.001, 'max_epochs': 300, 'patience': 40, 'weight_decay': 0.0001}",0.04644804353141838,0.04813312587647983
+"{'activation': 'elu', 'depth': 2, 'hidden': 32, 'lr': 0.01, 'max_epochs': 300, 'patience': 40, 'weight_decay': 0.0001}",0.03998042664334919,0.04052592384500029
+"{'activation': 'elu', 'depth': 2, 'hidden': 32, 'lr': 0.001, 'max_epochs': 300, 'patience': 40, 'weight_decay': 0.0001}",0.04181979474555763,0.043570272879420884
+"{'activation': 'elu', 'depth': 2, 'hidden': 64, 'lr': 0.01, 'max_epochs': 300, 'patience': 40, 'weight_decay': 0.0001}",0.04014379808043677,0.040743147647283755
+"{'activation': 'elu', 'depth': 2, 'hidden': 64, 'lr': 0.001, 'max_epochs': 300, 'patience': 40, 'weight_decay': 0.0001}",0.043279930727722044,0.044092974610536705

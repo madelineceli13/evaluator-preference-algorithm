@@ -1,0 +1,14 @@
+config,train_mse,val_mse
+"{'activation': 'elu', 'batch_size': 256, 'depth': 1, 'hidden': 32, 'lr': 0.01, 'max_epochs': 200, 'patience': 30, 'weight_decay': 0.0001}",0.19745869043537775,0.18750884179032204
+"{'activation': 'elu', 'batch_size': 256, 'depth': 1, 'hidden': 32, 'lr': 0.001, 'max_epochs': 200, 'patience': 30, 'weight_decay': 0.0001}",0.19802862115023193,0.18805904199848833
+"{'activation': 'elu', 'batch_size': 256, 'depth': 1, 'hidden': 64, 'lr': 0.01, 'max_epochs': 200, 'patience': 30, 'weight_decay': 0.0001}",0.19839198501507563,0.18819018642205876
+"{'activation': 'elu', 'batch_size': 256, 'depth': 1, 'hidden': 64, 'lr': 0.001, 'max_epochs': 200, 'patience': 30, 'weight_decay': 0.0001}",0.1982687156987471,0.18809400241022994
+"{'activation': 'elu', 'batch_size': 256, 'depth': 1, 'hidden': 128, 'lr': 0.01, 'max_epochs': 200, 'patience': 30, 'weight_decay': 0.0001}",0.1997016936927095,0.18951771042349727
+"{'activation': 'elu', 'batch_size': 256, 'depth': 1, 'hidden': 128, 'lr': 0.001, 'max_epochs': 200, 'patience': 30, 'weight_decay': 0.0001}",0.19829414896861738,0.18860252583156817
+"{'activation': 'elu', 'batch_size': 256, 'depth': 2, 'hidden': 32, 'lr': 0.01, 'max_epochs': 200, 'patience': 30, 'weight_decay': 0.0001}",0.19792698939901204,0.18761737603991657
+"{'activation': 'elu', 'batch_size': 256, 'depth': 2, 'hidden': 32, 'lr': 0.001, 'max_epochs': 200, 'patience': 30, 'weight_decay': 0.0001}",0.19834666031651504,0.1886240503378954
+"{'activation': 'elu', 'batch_size': 256, 'depth': 2, 'hidden': 64, 'lr': 0.01, 'max_epochs': 200, 'patience': 30, 'weight_decay': 0.0001}",0.19762021613421188,0.1880633886970865
+"{'activation': 'elu', 'batch_size': 256, 'depth': 2, 'hidden': 64, 'lr': 0.001, 'max_epochs': 200, 'patience': 30, 'weight_decay': 0.0001}",0.1986686602976954,0.18889607759280494
+"{'activation': 'elu', 'batch_size': 256, 'depth': 2, 'hidden': 128, 'lr': 0.01, 'max_epochs': 200, 'patience': 30, 'weight_decay': 0.0001}",0.19856649228311324,0.18837989164570956
+"{'activation': 'elu', 'batch_size': 256, 'depth': 2, 'hidden': 128, 'lr': 0.001, 'max_epochs': 200, 'patience': 30, 'weight_decay': 0.0001}",0.19841184043556478,0.188644823628601
+"{'activation': 'elu', 'batch_size': 256, 'depth': 3, 'hidden': 32, 'lr': 0.01, 'max_epochs': 200, 'patience': 30, 'weight_decay': 0.0001}",0.1975320527057015,0.18803452697710785

@@ -78,6 +78,7 @@ def simulate_CV(function_name, d = 10, num_vals = 5, T = 30, sd = 0.2, test_size
                 'mse_lin': mse_lin,
                 'mse_iso': mse_iso,
                 'mse_CV': mse_CV,
+                'lambda':lam
             }
             df_row = pd.DataFrame([summary_dict])
 

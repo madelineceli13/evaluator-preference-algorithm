@@ -6,7 +6,7 @@ from functions import empirical_simulation, noise_level
 dir_name = 'data/NASA/outputs/'
 name = 'NASA'
 # some data checks to make sure everything is reasonable
-df = pd.read_csv('data/NASA/outputs/solver_evaluator_pairs_13.csv')
+df = pd.read_csv('../data/NASA/solver_evaluator_pairs_13.csv')
 
 print(df.head())
 
@@ -28,7 +28,7 @@ empirical_simulation(X,Y, dir_name, name)
 dir_name = 'data/ICLR/outputs_2023/'
 name = 'ICLR 2023'
 # some data checks to make sure everything is reasonable
-df = pd.read_csv('data/ICLR/ICLR_reviews_2023.csv')
+df = pd.read_csv('../data/ICLR/ICLR_reviews_2023.csv')
 print(df.head())
 print(df[['recommendation','empirical_novelty_and_significance','technical_novelty_and_significance','correctness']].describe())
 df = df[['recommendation','empirical_novelty_and_significance','technical_novelty_and_significance','correctness']]
@@ -56,7 +56,7 @@ empirical_simulation(X,Y, dir_name, name)
 dir_name = 'data/ICLR/outputs_2024/'
 name = 'ICLR 2024'
 # some data checks to make sure everything is reasonable
-df = pd.read_csv('data/ICLR/ICLR_reviews_2024.csv')
+df = pd.read_csv('../data/ICLR/ICLR_reviews_2024.csv')
 print(df.head())
 print(df[['rating','soundness','presentation','contribution']].describe())
 df = df[['rating','soundness','presentation','contribution']]
@@ -79,7 +79,7 @@ empirical_simulation(X,Y, dir_name, name)
 dir_name = 'data/ICLR/outputs_2025/'
 name = 'ICLR 2025'
 # some data checks to make sure everything is reasonable
-df = pd.read_csv('data/ICLR/ICLR_reviews_2025.csv')
+df = pd.read_csv('../data/ICLR/ICLR_reviews_2025.csv')
 print(df.head())
 print(df[['rating','soundness','presentation','contribution']].describe())
 df = df[['rating','soundness','presentation','contribution']]
