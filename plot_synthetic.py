@@ -169,4 +169,207 @@ def make_figure(data_dir="."):
 
 make_figure(data_dir="data/synthetic/")
 
+
+
+#!/usr/bin/env python3
+"""
+Build a Markdown table of average MSE (with standard errors) by functional form.
+
+Rows    = functional form (the `function` column)
+Columns = mean MSE for each method, standard error in parentheses:
+            Monotone NN   -> mse_nn
+            Monotone GBM  -> mse_gbm
+            Our algo (CV) -> mse_cv
+
+The standard error is the standard error of the mean: std(ddof=1) / sqrt(n),
+computed over every row belonging to a given functional form (i.e. across all
+sample sizes N and all trials t).
+
+Usage:
+    python make_table.py [input.csv] [-o output.md] [-d DECIMALS]
+"""
+import argparse
+import numpy as np
+import pandas as pd
+
+# method label -> column in the CSV. Order here sets the column order in the table.
+METHODS = {
+    "Monotone NN": "mse_nn",
+    "Monotone GBM": "mse_gbm",
+    "Our algo": "mse_cv",
+}
+
+# pretty names for the functional forms; anything not listed is title-cased
+PRETTY = {
+    "linear": "Linear",
+    "cobb_douglas": "Cobb-Douglas",
+    "leontief": "Leontief",
+}
+
+# order in which functional forms appear as rows
+ROW_ORDER = ["linear", "cobb_douglas", "leontief"]
+
+
+def sem(x: pd.Series) -> float:
+    """Standard error of the mean."""
+    x = x.dropna()
+    return x.std(ddof=1) / np.sqrt(len(x))
+
+
+def build_table(df: pd.DataFrame, decimals: int = 3) -> str:
+    grouped = df.groupby("function")
+
+    # keep requested order, then append any unexpected functions at the end
+    funcs = [f for f in ROW_ORDER if f in grouped.groups]
+    funcs += [f for f in grouped.groups if f not in funcs]
+
+    fmt = f"{{:.{decimals}f}}"
+
+    def cell(func, col):
+        vals = grouped.get_group(func)[col]
+        return f"{fmt.format(vals.mean())} ({fmt.format(sem(vals))})"
+
+    # header
+    header = "| Dataset | " + " | ".join(METHODS.keys()) + " |"
+    align = "|:--------|" + "|".join(["------------:"] * len(METHODS)) + "|"
+
+    lines = [header, align]
+    for func in funcs:
+        name = PRETTY.get(func, func.replace("_", " ").title())
+        cells = " | ".join(cell(func, col) for col in METHODS.values())
+        lines.append(f"| {name} | {cells} |")
+
+    return "\n".join(lines)
+
+
+def table_nn_gbm():
+    p = argparse.ArgumentParser(description=__doc__,
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("input", nargs="?", default="data/synthetic/synthetic_results_raw.csv",
+                   help="input CSV (default: synthetic_results_raw.csv)")
+    p.add_argument("-o", "--output", default=None,
+                   help="write the Markdown table to this file (also printed)")
+    p.add_argument("-d", "--decimals", type=int, default=4,
+                   help="decimal places (default: 3)")
+    args = p.parse_args()
+
+    df = pd.read_csv(args.input)
+    df = df[df['N']<=200]
+    table = build_table(df, decimals=args.decimals)
+
+    print(table)
+    if args.output:
+        with open(args.output, "w") as f:
+            f.write(table + "\n")
+
+
+table_nn_gbm()
+
 # plot_noise_and_alignment()
+
+#!/usr/bin/env python3
+"""
+Build a Markdown table of average MSE (with standard errors) by functional form,
+split by sample size.
+
+Rows    = functional form x sample-size bucket. Each functional form gets two
+          rows: one aggregating trials with N <= THRESHOLD and one with N > THRESHOLD.
+Columns = mean MSE for each method, standard error in parentheses:
+            Monotone NN   -> mse_nn
+            Monotone GBM  -> mse_gbm
+            Our algo (CV) -> mse_cv
+
+The standard error is the standard error of the mean: std(ddof=1) / sqrt(n),
+computed over every row within a given (functional form, sample-size bucket).
+
+Usage:
+    python make_table.py [input.csv] [-o output.md] [-d DECIMALS] [-t THRESHOLD]
+"""
+import argparse
+import numpy as np
+import pandas as pd
+
+# method label -> column in the CSV. Order here sets the column order in the table.
+METHODS = {
+    "Monotone NN": "mse_nn",
+    "Monotone GBM": "mse_gbm",
+    "Our algo": "mse_cv",
+}
+
+# pretty names for the functional forms; anything not listed is title-cased
+PRETTY = {
+    "linear": "Linear",
+    "cobb_douglas": "Cobb-Douglas",
+    "leontief": "Leontief",
+}
+
+# order in which functional forms appear as rows
+ROW_ORDER = ["linear", "cobb_douglas", "leontief"]
+
+# sample-size split: rows with N <= THRESHOLD vs N > THRESHOLD
+THRESHOLD = 500
+
+
+def sem(x: pd.Series) -> float:
+    """Standard error of the mean."""
+    x = x.dropna()
+    return x.std(ddof=1) / np.sqrt(len(x))
+
+
+def build_table(df: pd.DataFrame, decimals: int = 3, threshold: int = THRESHOLD) -> str:
+    fmt = f"{{:.{decimals}f}}"
+
+    # label each row by its sample-size bucket, then group by (function, bucket)
+    small_label = f"N \u2264 {threshold}"
+    large_label = f"N > {threshold}"
+    df = df.copy()
+    df["_bucket"] = np.where(df["N"] <= threshold, small_label, large_label)
+
+    grouped = df.groupby(["function", "_bucket"])
+
+    def cell(func, bucket, col):
+        if (func, bucket) not in grouped.groups:
+            return "-"
+        vals = grouped.get_group((func, bucket))[col]
+        return f"{fmt.format(vals.mean())} ({fmt.format(sem(vals))})"
+
+    # keep requested function order, then append any unexpected functions
+    funcs = [f for f in ROW_ORDER if f in df["function"].unique()]
+    funcs += [f for f in df["function"].unique() if f not in funcs]
+
+    header = "| Dataset | " + " | ".join(METHODS.keys()) + " |"
+    align = "|:--------|" + "|".join(["------------:"] * len(METHODS)) + "|"
+
+    lines = [header, align]
+    for func in funcs:
+        name = PRETTY.get(func, func.replace("_", " ").title())
+        for bucket in (small_label, large_label):
+            cells = " | ".join(cell(func, bucket, col) for col in METHODS.values())
+            lines.append(f"| {name} ({bucket}) | {cells} |")
+
+    return "\n".join(lines)
+
+
+def table_nn_gbm():
+    p = argparse.ArgumentParser(description=__doc__,
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("input", nargs="?", default="data/synthetic/synthetic_results_raw.csv",
+                   help="input CSV (default: synthetic_results_raw.csv)")
+    p.add_argument("-o", "--output", default=None,
+                   help="write the Markdown table to this file (also printed)")
+    p.add_argument("-d", "--decimals", type=int, default=4,
+                   help="decimal places (default: 4)")
+    p.add_argument("-t", "--threshold", type=int, default=THRESHOLD,
+                   help=f"sample-size split point, N<=t vs N>t (default: {THRESHOLD})")
+    args = p.parse_args()
+
+    df = pd.read_csv(args.input)
+    table = build_table(df, decimals=args.decimals, threshold=args.threshold)
+
+    print(table)
+    if args.output:
+        with open(args.output, "w") as f:
+            f.write(table + "\n")
+
+
+table_nn_gbm()

@@ -12,7 +12,7 @@ df['est_error_constant'] = df['MSE_constant'] - df['mean_noise']
 df['percent_improvement_prediction_cv'] = np.round((df['MSE_lin'] - df['MSE_cv']) / df['MSE_lin'] * 100, 1)
 df['percent_improvement_estimation_cv'] = np.round((df['est_error_lin'] - df['est_error_cv']) / df['est_error_lin'] * 100, 1)
 df['percent_improvement_prediction_iso'] = np.round((df['MSE_lin'] - df['MSE_iso']) / df['MSE_lin'] * 100, 1)
-df['percent_improvement_estimation_iso'] = np.round((df['MSE_lin'] - df['MSE_iso']) / df['MSE_lin'] * 100, 1)
+df['percent_improvement_estimation_iso'] = np.round((df['est_error_lin'] - df['est_error_iso']) / df['est_error_lin'] * 100, 1)
 
 
 df = df.drop(columns=['mean_noise', 'se_noise'])
@@ -61,7 +61,7 @@ import pandas as pd
 df = pd.read_csv("results/empirical_stats_processed_rebuttal.csv")
 
 
-print(f"{'| Dataset':<22}| {'Linear':>24} | {'CV':>24} | {'Isotonic':>24} | {'Constant':>24} |")
+print(f"{'| Dataset':<22}| {'Constant':>24} | {'Lin. reg.':>24} | {'Isotonic reg.':>24} | {'Our algo':>24} |")
 print(f"|:{'-'*20}|{'-'*25}:|{'-'*25}:|{'-'*25}:|{'-'*25}:|")
 
 for _, row in df.iterrows():
@@ -73,15 +73,15 @@ for _, row in df.iterrows():
 
     print(
         f"| {row['Name']:<20}"
-        f"| {lin:>24}"
-        f" | {cv:>24}"
+        f"| {con:>24}"
+        f" | {lin:>24}"
         f" | {iso:>24}"
-        f" | {con:>24} |"
+        f" | {cv:>24} |"
     )
 
 
 print(
-    "| Dataset | Prediction Error (Lin.) | Prediction Error (CV) | Δ (%) | Reducible Error (Lin.) | Reducible Error (CV) | Δ (%) |"
+    "| Dataset | Prediction Error (Lin. reg.) | Prediction Error (Our algo) | Δ (%) | Reducible Error (Lin. reg.) | Reducible Error (Our algo) | Δ (%) |"
 )
 print(
     "|:--------|-------------------------:|----------------------:|------:|-----------------------:|---------------------:|------:|"
@@ -109,7 +109,7 @@ for _, row in df.iterrows():
     )
 
 print(
-    "| Dataset | Linear Regression | Our Algorithm | Isotonic Regression | $\\lambda^{\\star}$ |"
+    "| Dataset | Lin. reg. | Isotonic reg. | Our algo | $\\lambda^{\\star}$ |"
 )
 print(
     "|:--------|------------------:|--------------:|--------------------:|--------------------:|"
@@ -117,9 +117,9 @@ print(
 df['lam']=df['lambda']
 for _, row in df.iterrows():
 
-    lin = f"{row.est_error_lin:.3f} ({row.SE_lin:.3f})"
-    ours = f"{row.est_error_cv:.3f} ({row.SE_cv:.3f})"
-    iso = f"{row.est_error_iso:.3f} ({row.SE_iso:.3f})"
+    lin = f"{row.est_error_lin:.4f} ({row.SE_lin:.4f})"
+    ours = f"{row.est_error_cv:.7f} ({row.SE_cv:.7f})"
+    iso = f"{row.est_error_iso:.7f} ({row.SE_iso:.7f})"
 
     # Format lambda nicely
     lam = f"{row.lam:.4g}"
@@ -127,13 +127,13 @@ for _, row in df.iterrows():
     print(
         f"| {row['Name']}"
         f"| {lin}"
-        f"| **{ours}**"
         f"| {iso}"
+        f"| **{ours}**"
         f"| {lam} |"
     )
 
 print(
-    "| Dataset | Constant | Linear regression | Isotonic | Our Algo. |"
+    "| Dataset | Constant | Lin. reg. | Isotonic reg. | Our algo |"
 )
 print(
     "|:--------|-----------------------------:|----------------------------:|---------------------------:|---------------------------:|"
@@ -141,10 +141,10 @@ print(
 
 for _, row in df.iterrows():
 
-    lin = f"{row.est_error_lin:.3f} ({row.SE_lin:.3f})"
-    ours = f"{row.est_error_cv:.3f} ({row.SE_cv:.3f})"
-    iso = f"{row.est_error_iso:.3f} ({row.SE_iso:.3f})"
-    con = f"{row.est_error_constant:.3f} ({row.SE_constant:.3f})"
+    lin = f"{row.est_error_lin:.4f} ({row.SE_lin:.4f})"
+    ours = f"{row.est_error_cv:.4f} ({row.SE_cv:.4f})"
+    iso = f"{row.est_error_iso:.4f} ({row.SE_iso:.4f})"
+    con = f"{row.est_error_constant:.4f} ({row.SE_constant:.4f})"
 
     print(
         f"| {row['Name']}"
@@ -172,8 +172,8 @@ for m in ['lin', 'cv', 'nn', 'gbm']:
     df[f'est_error_{m}'] = df[f'MSE_{m}'] - df['mean_noise']
 
 # --- table: reducible error with SE in parentheses --------------------------
-print("| Dataset | Linear regression | Monotone NN | Monotone GBM | Our Algo. |")
-print("|:--------|------------------:|------------:|-------------:|----------:|")
+print("| Dataset | Monotone NN | Monotone GBM | Our algo |")
+print("|:--------|------------:|-------------:|----------:|")
 
 for _, row in df.iterrows():
     lin  = f"{row.est_error_lin:.3f} ({row.SE_lin:.3f})"
@@ -183,7 +183,6 @@ for _, row in df.iterrows():
 
     print(
         f"| {row['Name']}"
-        f"| {lin}"
         f"| {nn}"
         f"| {gbm}"
         f"| {ours} |"

@@ -1,14 +1,14 @@
 import pandas as pd
 import numpy as np
-df_2024_gtp_test = pd.read_csv('data/LLMs/ICLR2024.test.gpt-4o.csv')
-df_2024_gtp_extended = pd.read_csv('data/LLMs/ICLR2024.extended.gpt-4o.csv')
+df_2024_gtp_test = pd.read_csv('../data/LLM reviews/ICLR2024.test.gpt-4o.csv')
+df_2024_gtp_extended = pd.read_csv('../data/LLM reviews/ICLR2024.extended.gpt-4o.csv')
 
 df_gpt = pd.concat([df_2024_gtp_test, df_2024_gtp_extended])
 df_gpt_human = df_gpt[df_gpt['label']==0]
 df_gpt = df_gpt[df_gpt['label']==1]  # only keep the "positive" samples where the model is the reviewer
 
-df_2024_llama_test = pd.read_csv('data/LLMs/ICLR2024.test.llama-3.1-70b.csv')
-df_2024_llama_extended = pd.read_csv('data/LLMs/ICLR2024.extended.llama-3.1-70b.csv')
+df_2024_llama_test = pd.read_csv('../data/LLM reviews/ICLR2024.test.llama-3.1-70b.csv')
+df_2024_llama_extended = pd.read_csv('../data/LLM reviews/ICLR2024.extended.llama-3.1-70b.csv')
 
 df_llama = pd.concat([df_2024_llama_test, df_2024_llama_extended])
 df_llama_human = df_llama[df_llama['label']==0]
@@ -95,9 +95,9 @@ for df, name in [(df_gpt, 'gpt'), (df_llama, 'llama'), (df_gpt_human, 'gpt_human
 df_gpt = df_gpt.dropna(subset=COLUMNS)
 df_llama = df_llama.dropna(subset=COLUMNS)
 df_gpt_human = df_gpt_human.dropna(subset=COLUMNS)
-df_gpt[COLUMNS + ['PaperId']].to_csv('data/LLMs/ICLR2024.gpt-4o_reviews.csv', index=False)
-df_llama[COLUMNS + ['PaperId']].to_csv('data/LLMs/ICLR2024.llama-3.1-70b_reviews.csv', index=False)
-df_gpt_human[COLUMNS + ['PaperId']].to_csv('data/LLMs/ICLR2024_human_reviews.csv', index=False)
+df_gpt[COLUMNS + ['PaperId']].to_csv('../data/LLM reviews/ICLR2024.gpt-4o_reviews.csv', index=False)
+df_llama[COLUMNS + ['PaperId']].to_csv('../data/LLM reviews/ICLR2024.llama-3.1-70b_reviews.csv', index=False)
+df_gpt_human[COLUMNS + ['PaperId']].to_csv('../data/LLM reviews/ICLR2024_human_reviews.csv', index=False)
 
 
 print(df_gpt.shape)
@@ -114,4 +114,4 @@ print(len(df_gpt_human['PaperId'].unique()))
 # plt.show()
 
 df_gpt_human = df_gpt_human.merge(df_gpt, on='PaperId', suffixes=('_human', '_gpt'))
-df_gpt_human.to_csv('data/LLMs/ICLR2024_human_reviews_with_gpt.csv', index=False)
+df_gpt_human.to_csv('../data/LLM reviews/ICLR2024_human_reviews_with_gpt.csv', index=False)

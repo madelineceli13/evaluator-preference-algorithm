@@ -455,10 +455,12 @@ def bootstrap_noise(X,Y,name, B = 1000):
        'mean_noise': [],
    })
    df.to_csv(f'results/bootstrap_noise_summary_{name}.csv', index=False)
+   y_min = np.min(Y)
+   y_max = np.max(Y)
    samples = []
    for i in range(B):
         X_sample, Y_sample = resample(X, Y, replace=True, random_state=i)
-        noise_sample =noise_level(X_sample, Y_sample, name = f'{name}_bootstrap_{i}', split = False, bootstrap = True)
+        noise_sample =noise_level(X_sample, Y_sample, name = f'{name}_bootstrap_{i}', y_min = y_min, y_max = y_max, split = False, bootstrap = True)
         samples.append(noise_sample)
         df_row = pd.DataFrame({
             'number': [i],

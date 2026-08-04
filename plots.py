@@ -40,9 +40,9 @@ def plot(start, stop, title):
 
     # ── Right subplot: Reducible error ──────────────────────────────────────
 
-    ax2.bar(x - BAR_WIDTH/2, df['est_error_lin'], color='lightblue', hatch='.',
+    ax2.bar(x - BAR_WIDTH/2, df['MSE_lin']-df['noise'], color='lightblue', hatch='.',
             yerr=ci_lin, label='Linear regression', **BAR_KWARGS)
-    ax2.bar(x + BAR_WIDTH/2, df['est_error_cv'],  color='thistle',   hatch='|',
+    ax2.bar(x + BAR_WIDTH/2, df['MSE_cv']-df['noise'],  color='thistle',   hatch='|',
             yerr=ci_cv,  label='Our algorithm',     **BAR_KWARGS)
 
     for ax, ylabel in [(ax1, 'Prediction error'), (ax2, 'Reducible error')]:
@@ -60,9 +60,10 @@ def plot(start, stop, title):
     plt.subplots_adjust(wspace=0.3)
     plt.savefig(f'plots/combined_results_{title}.png', dpi=300, bbox_inches='tight')
 
-plot(4, 8, 'trip_advisor')
+plot(7, 11, 'trip_advisor')
 
-
+plot(1, 4, 'iclr')
+plot(4, 7, 'iclr_llm')
 def plot_noise_and_alignment():
     df_noise = pd.read_csv('results/irreducible_error.csv')
     df_align = pd.read_csv('results/residuals_human.csv')
