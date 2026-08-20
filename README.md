@@ -1,18 +1,12 @@
 # Code for Learning What Evaluators Value
 
-Code for *Learning What Evaluators Value: A Reliable Approach to Modeling Evaluator Preferences*,
-plus a follow-up ICLR peer-review interpretability case study.
+Code for *Learning What Evaluators Value: A Reliable Approach to Modeling Evaluator Preferences*
 
 ## Requirements
 
 Core: `numpy pandas scipy scikit-learn matplotlib cvxpy pyarrow`
 Optional (only for the NN/GBM baselines in `additional_models.py`, `monotone_nn.py`,
 `monotone_gbm.py`, `synthetic_simulations.py`): `torch xgboost mononet`
-
-```bash
-pip install -r requirements.txt   # core + optional
-pip install "mononet[torch]"      # mononet needs this extras syntax
-```
 
 ## Data
 
@@ -48,13 +42,12 @@ python empirical_hotelrec.py               # Tripadvisor
 python empirical_LLM.py                    # ICLR LLM-vs-human reviews
 python empirical_nasa_ICLR.py              # NASA solver/evaluator
 python empirical_nasa_evaluator_type.py    # ... broken down by evaluator expertise
-python empirical_synthetic.py              # synthetic simulations (appendix)
+python empirical_synthetic.py              # synthetic simulations 
 
 # optional NN/GBM baselines, needs torch/xgboost/mononet:
 python monotone_nn.py
 python monotone_gbm.py
 python synthetic_simulations.py
-
 python results/process_data.py             # print result tables from accumulated results/*.csv
 ```
 
@@ -68,8 +61,6 @@ rating, and how far reviewers' ratings deviate from what the criteria alone impl
 
 ```bash
 python iclr_analysis.py               # both ICLR 2025 and 2026; reuses any saved fit
-python iclr_analysis.py --full        # force a refit for both years
-python iclr_analysis.py --reuse-fit   # skip the expensive Shapley-value refit
 ```
 
 Outputs go to `data/ICLR_case_study/`, filenames tagged by year (`outputs_<year>/`,
@@ -79,5 +70,4 @@ decision-flip findings are skipped -- it still gets the full set of plots.
 
 ## Computational Requirements
 
-Runs locally, no GPU required. Most experiments finish within a few hours on consumer hardware;
-the slowest single step is the ICLR case study's Shapley-value refit (~30s/year).
+Runs locally, no GPU required.
