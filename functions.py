@@ -424,10 +424,7 @@ def unique_xvals(num_vals, num_criteria):
     X_grid = np.vstack([g.ravel() for g in mesh]).T  # stack and transpose to get shape (n^d, d)
     return X_grid
 
-def noise_level(X,Y,name, split = False, y_min=-1, y_max=-1, bootstrap = False):
-    if y_min == -1:
-        y_min = np.min(Y)
-        y_max = np.max(Y)
+def noise_level(X,Y,name, y_min, y_max, split = False, bootstrap = False):
     if split == True:
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
         X = X_test
@@ -469,27 +466,25 @@ def bootstrap_noise(X,Y,name, B = 1000):
         df_row.to_csv(f'results/bootstrap_noise_summary_{name}.csv', mode='a', header=False, index=False)
    return samples
 
-def bootstrap_function_estimation(X,Y, dir_name, B = 1000, N=None):
-  if N is None:
-      N = X.shape[0]
-  master_df = None
-  n_input_cols = X.shape[1]
-  input_cols = [f'x{j}' for j in range(n_input_cols)]
-  y_min = np.min(Y)
-  y_max = np.max(Y)
-  for i in range(B):
-    if master_df is not None:
-      print(f"Iteration {i}, master_df shape: {master_df.shape}")
 
-    col = f'boot_{i:04d}'
-    X_sample, Y_sample = resample(X, Y, replace=True, random_state=i, n_samples=N)
+def run_algorithm(X,Y, dir_name, CRITERIA, OVERALL_EVALUATION):
+    y_min = Y.min()
+    y_max = Y.max()
+    train_mse, test_mse, df_CV, lam = cross_validation(X, Y, X, Y, y_min, y_max, Lambda = Lambda, save = True, dir_name = dir_name)
     
-    _, _, df_resample, _ = cross_validation(X_sample, Y_sample, X_sample, Y_sample, y_min = y_min, y_max = y_max, save = False)
-    df_resample.columns = input_cols + [col]
-    if master_df is None:
-          master_df = df_resample
+    if lam!=np.inf:
+
+      df_CV.columns = CRITERIA + [OVERALL_EVALUATION] # rename columns in dataframe 
+      df_CV.to_csv(f'{dir_name}cv_df.csv') 
+
     else:
-          master_df = master_df.merge(df_resample, on=input_cols, how='outer')
+      coefficients, _, _ = linear_regression_analysis(X, Y, X, Y, y_min=y_min, y_max=y_max, printer_friend= False, CV = True)
+      print("---------------------------------")
+      print("Linear regression values:")
+      print(f'Criteria: {CRITERIA}')
+      print("Coefficients:", np.round(coefficients[0], 3))
+      print("Intercept:", np.round(coefficients[1], 3))
+      print("---------------------------------")
     
-    master_df.to_csv(f'{dir_name}bootstrap_function.csv', index=False)
-  return master_df
+    print(f'Optimal regularization parameter:{lam}')
+    print(f'Training error{train_mse}')

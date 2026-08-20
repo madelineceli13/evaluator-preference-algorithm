@@ -106,12 +106,3 @@ print(df_gpt_human.shape)
 print(len(df_gpt['PaperId'].unique()))
 print(len(df_llama['PaperId'].unique()))
 print(len(df_gpt_human['PaperId'].unique()))
-
-# import matplotlib.pyplot as plt
-# plt.hist(df_gpt_human['contribution'], bins=10, label = 'Human evaluations', alpha = 0.5)
-# plt.hist(df_gpt['contribution'], bins=10, label = 'GPT evaluations', alpha=0.5)
-# plt.legend()
-# plt.show()
-
-df_gpt_human = df_gpt_human.merge(df_gpt, on='PaperId', suffixes=('_human', '_gpt'))
-df_gpt_human.to_csv('../data/LLM reviews/ICLR2024_human_reviews_with_gpt.csv', index=False)

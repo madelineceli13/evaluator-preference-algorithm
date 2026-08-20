@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from functions import empirical_simulation, iso_fit_many, bootstrap_function_estimation, bootstrap_noise
+from functions import empirical_simulation, iso_fit_many, bootstrap_noise
 test_size = 0.2
 min_val = 1
 max_val = 10

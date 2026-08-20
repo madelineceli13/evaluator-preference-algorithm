@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-df_stats = pd.read_csv('results/empirical_stats_rebuttal.csv')
+df_stats = pd.read_csv('results/empirical_stats.csv')
 df_noise = pd.read_csv('results/noise_summary.csv')
 df = df_stats.merge(df_noise, on='Name')
 
@@ -16,49 +16,47 @@ df['percent_improvement_estimation_iso'] = np.round((df['est_error_lin'] - df['e
 
 
 df = df.drop(columns=['mean_noise', 'se_noise'])
-df.to_csv('results/empirical_stats_processed_rebuttal.csv', index=False, header = True)
+df.to_csv('results/empirical_stats_processed.csv', index=False, header = True)
 
 # irreduible error bootstrapping
 
-# for name in ['GPT-4o', 'Human evaluators', 'Llama 3.1 70b']:
-#     df = pd.read_csv(f'results/bootstrap_noise_summary_{name}.csv')
-#     samples = df['mean_noise'].values
+for name in ['GPT-4o', 'Human evaluators', 'Llama 3.1 70b']:
+    df = pd.read_csv(f'results/bootstrap_noise_summary_{name}.csv')
+    samples = df['mean_noise'].values
 
-#     mean   = np.mean(samples)
-#     lower  = np.percentile(samples, 2.5)
-#     upper  = np.percentile(samples, 97.5)
+    mean   = np.mean(samples)
+    lower  = np.percentile(samples, 2.5)
+    upper  = np.percentile(samples, 97.5)
 
-#     result = pd.DataFrame({
-#         'name':       [name],
-#         'mean_noise': [mean],
-#         'lower_ci':   [lower],
-#         'upper_ci':   [upper],
-#     })
+    result = pd.DataFrame({
+        'name':       [name],
+        'mean_noise': [mean],
+        'lower_ci':   [lower],
+        'upper_ci':   [upper],
+    })
 
-#     result.to_csv('results/irreducible_error.csv', index=False, mode='a', header=not pd.io.common.file_exists('results/irreducible_error.csv'))
+    result.to_csv('results/irreducible_error.csv', index=False, mode='a', header=not pd.io.common.file_exists('results/irreducible_error.csv'))
 
-# for name in ['All evaluators', 'Multivalent evaluators', 'Univalent evaluators', 'Outside expertise evaluators']:
-#     df = pd.read_csv(f'results/bootstrap_noise_summary_{name}.csv')
-#     samples = df['mean_noise'].values
+for name in ['All evaluators', 'Multivalent evaluators', 'Univalent evaluators', 'Outside expertise evaluators']:
+    df = pd.read_csv(f'results/bootstrap_noise_summary_{name}.csv')
+    samples = df['mean_noise'].values
 
-#     mean   = np.round(np.mean(samples), 3)
-#     lower  = np.round(np.percentile(samples, 2.5), 3)
-#     upper  = np.round(np.percentile(samples, 97.5), 3)
+    mean   = np.round(np.mean(samples), 3)
+    lower  = np.round(np.percentile(samples, 2.5), 3)
+    upper  = np.round(np.percentile(samples, 97.5), 3)
 
-#     result = pd.DataFrame({
-#         'name':       [name],
-#         'mean_noise': [mean],
-#         'lower_ci':   [lower],
-#         'upper_ci':   [upper],
-#     })
+    result = pd.DataFrame({
+        'name':       [name],
+        'mean_noise': [mean],
+        'lower_ci':   [lower],
+        'upper_ci':   [upper],
+    })
 
-#     result.to_csv('results/irreducible_error.csv', index=False, mode='a', header=not pd.io.common.file_exists('results/irreducible_error.csv'))
+    result.to_csv('results/irreducible_error.csv', index=False, mode='a', header=not pd.io.common.file_exists('results/irreducible_error.csv'))
 
-
-import pandas as pd
 
 # Load results
-df = pd.read_csv("results/empirical_stats_processed_rebuttal.csv")
+df = pd.read_csv("results/empirical_stats_processed.csv")
 
 
 print(f"{'| Dataset':<22}| {'Constant':>24} | {'Lin. reg.':>24} | {'Isotonic reg.':>24} | {'Our algo':>24} |")
@@ -155,7 +153,7 @@ for _, row in df.iterrows():
     )
 
 # --- load raw pieces and merge (mirrors your existing merge) ----------------
-df_stats = pd.read_csv('results/empirical_stats_rebuttal.csv')
+df_stats = pd.read_csv('results/empirical_stats.csv')
 df_noise = pd.read_csv('results/noise_summary.csv')
 df_add   = pd.read_csv('results/additional_models_stats.csv')
 

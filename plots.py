@@ -60,10 +60,10 @@ def plot(start, stop, title):
     plt.subplots_adjust(wspace=0.3)
     plt.savefig(f'plots/combined_results_{title}.png', dpi=300, bbox_inches='tight')
 
-plot(7, 11, 'trip_advisor')
+plot(4, 8, 'trip_advisor')
 
 plot(1, 4, 'iclr')
-plot(4, 7, 'iclr_llm')
+plot(8, 11, 'iclr_llm')
 def plot_noise_and_alignment():
     df_noise = pd.read_csv('results/irreducible_error.csv')
     df_align = pd.read_csv('results/residuals_human.csv')

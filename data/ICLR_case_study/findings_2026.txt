@@ -1,0 +1,27 @@
+ICLR 2026 findings  (n=75859 reviews, 19474 papers)
+================================================================
+[1] IMPORTANCE (share of total):
+   criterion  shapley_share  weight_share
+   soundness          0.329         0.344
+presentation          0.206         0.241
+contribution          0.465         0.416
+    ranking: contribution > soundness > presentation
+
+[2/3] LINEARITY: optimal lambda 0 (val 1.376) vs linear 1.416 (2.9% worse); linear worst=True
+
+[4] ESTIMATE QUALITY: held-out MSE 1.406 vs irreducible floor 1.399 (within 0.5%); R^2 0.595
+[rising bar] others low (1-2): mean +1 effect 0.41
+[rising bar] others high (3-4): mean +1 effect 1.22
+[gatekeeper] ceiling(4,4,4)=7.71 | soundness=1 cap 3.75 presentation=1 cap 4.71 contribution=1 cap 2.65
+[accept recipe] rating>=6 needs (min per criterion): {'soundness': np.int64(3), 'presentation': np.int64(2), 'contribution': np.int64(3)}
+
+[6] COMMENSURATION BIAS: median 0.77 mean 0.91 | >=1pt 38.7% >=2pt 9.3% >=3pt 1.0% >=4pt 0.1%
+    over-rated >=2pt 5.6% | under-rated <=-2pt 3.8%
+
+[5] SAME SCORES: mode profile (3, 3, 3) n=14616, ratings {0: 4, 2: 187, 4: 3203, 6: 9440, 8: 1777, 10: 5}; within-profile sd 1.18
+
+[7] DECISION FLIP (real decisions): 18789 decided papers; accepted 5351 (28.5% among decided; headline 27.4%); threshold mean 5.00
+    flip if one reviewer moves one level: 30.4% | within one level of threshold: 37.5%
+
+[8] COMMENSURATION-BIAS DECISION FLIPS (biased vs unbiased world): 18789 decided papers; accepted 5663 biased / 5380 unbiased at 28.5% rate; thresholds 5.00 biased / 4.71 unbiased
+    papers swapped: 2913 (15.5%) -- 1598 accept->reject, 1315 reject->accept
