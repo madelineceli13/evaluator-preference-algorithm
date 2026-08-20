@@ -10,10 +10,10 @@ Runs the full analysis for both ICLR years:
   * (2026 only -- 2025 has no paper_id/decision data) computes every number quoted
     in the report and writes it to a text file.
 
-Usage (from the repo root; needs the same env as main.py, i.e. cvxpy available):
-    python report_scripts/iclr_analysis.py                # both years; reuses any saved fit
-    python report_scripts/iclr_analysis.py --full          # force a refit for both years
-    python report_scripts/iclr_analysis.py --reuse-fit     # skip the expensive Shapley refit
+Usage (from the repo root; needs cvxpy available):
+    python iclr_analysis.py                # both years; reuses any saved fit
+    python iclr_analysis.py --full          # force a refit for both years
+    python iclr_analysis.py --reuse-fit     # skip the expensive Shapley refit
 
 Everything is written under data/ICLR_case_study/, with every filename tagged by
 year (outputs_<year>/, debiased_reviews_<year>.csv, criteria_importance_<year>.csv,

@@ -1,76 +1,83 @@
 # Code for Learning What Evaluators Value
 
-This repository contains the code accompanying the paper *Learning What Evaluators Value: A Reliable
-Approach to Modeling Evaluator Preferences*.
-
-## Overview
-
-This codebase implements the algorithm and empirical results for our paper. 
+Code for *Learning What Evaluators Value: A Reliable Approach to Modeling Evaluator Preferences*,
+plus a follow-up ICLR peer-review interpretability case study.
 
 ## Requirements
 
-```
-numpy
-pandas
-scikit-learn
-matplotlib
-scipy
-```
-
-Install dependencies via:
+Core: `numpy pandas scipy scikit-learn matplotlib cvxpy pyarrow`
+Optional (only for the NN/GBM baselines in `additional_models.py`, `monotone_nn.py`,
+`monotone_gbm.py`, `synthetic_simulations.py`): `torch xgboost mononet`
 
 ```bash
-pip install numpy pandas scikit-learn matplotlib scipy
+pip install -r requirements.txt   # core + optional
+pip install "mononet[torch]"      # mononet needs this extras syntax
 ```
 
 ## Data
 
-The two primary datasets used in this paper are:
+Raw source data lives in a `data/` directory **one level above this repo** (sibling, not tracked
+in git) -- scripts use paths like `'../data/ICLR/...'` and must be run from the repo root:
 
-- **Tripadvisor (HotelRec):** Available at https://github.com/diegoantognini/HotelRec
-- **ICLR peer reviews (human + LLM):** Available at https://huggingface.co/datasets/IntelLabs/AI-Peer-Review-Detection-Benchmark
+- **HotelRec (Tripadvisor):** `../data/hotelrec/*.parquet` -- https://github.com/diegoantognini/HotelRec
+- **ICLR reviews:** `../data/ICLR/ICLR_reviews_<year>.csv`, `../data/ICLR/solver_evaluator_pairs_13.csv`,
+  `../data/LLM reviews/*.csv` -- https://huggingface.co/datasets/IntelLabs/AI-Peer-Review-Detection-Benchmark
 
-Download these datasets and place them in a `data/` directory before running the experiments.
+The `data/` directory *inside* this repo is different: it holds this codebase's own derived
+outputs (fits, debiased reviews, plots) and is checked into git.
 
 ## Repository Structure
 
 ```
-├── data/                   # Place downloaded datasets here
-├── plots/                  # Output figures
-├── results/                # Output results (CSVs)
-├── empirical_stats.csv     # Precomputed prediction/reducible error statistics
-├── noise_summary.csv       # Bootstrapped irreducible error estimates
-├── residuals_human.csv     # Preference misalignment estimates
-├── other                   # Code for all figures and results in the paper
-└── README.md
+├── functions.py               # core library (regression, CV, bootstrap noise) -- everything imports this
+├── empirical_*.py             # paper reproduction: hotelrec, LLM, NASA (+ evaluator-type), synthetic
+├── additional_models.py, monotone_nn.py, monotone_gbm.py, synthetic_simulations.py
+│                               # optional NN/GBM baselines
+├── plot_synthetic.py, plot_understanding.py, plots.py   # paper figures
+├── iclr_analysis.py           # ICLR case study entry point (see below)
+├── interpretation_functions.py, interpretation_plots.py # its importance metrics + figures
+├── data/                      # derived outputs (see Data section)
+├── results/                   # output CSVs + process_data.py (prints result tables)
+└── plots/                     # output figures
 ```
 
-## Reproducing Results
-
-### Tripadvisor experiments
-Runs the comparison of our algorithm vs. linear regression on the HotelRec dataset and saves results to `empirical_stats.csv`:
+## Reproducing the Paper's Results
 
 ```bash
-python empirical_hotelrec.py
+python empirical_hotelrec.py               # Tripadvisor
+python empirical_LLM.py                    # ICLR LLM-vs-human reviews
+python empirical_nasa_ICLR.py              # NASA solver/evaluator
+python empirical_nasa_evaluator_type.py    # ... broken down by evaluator expertise
+python empirical_synthetic.py              # synthetic simulations (appendix)
+
+# optional NN/GBM baselines, needs torch/xgboost/mononet:
+python monotone_nn.py
+python monotone_gbm.py
+python synthetic_simulations.py
+
+python results/process_data.py             # print result tables from accumulated results/*.csv
 ```
 
-### ICLR LLM experiments
-Runs the consistency and preference alignment analysis on the ICLR peer review dataset:
+Figures: `plot_synthetic.py`, `plot_understanding.py`, `plots.py`.
+
+## ICLR Interpretability Case Study
+
+Analyzes which review criteria (soundness, presentation, contribution) drive the overall ICLR
+rating, and how far reviewers' ratings deviate from what the criteria alone imply
+("commensuration bias"). Run from the repo root:
 
 ```bash
-python empirical_LLMs.py
+python iclr_analysis.py               # both ICLR 2025 and 2026; reuses any saved fit
+python iclr_analysis.py --full        # force a refit for both years
+python iclr_analysis.py --reuse-fit   # skip the expensive Shapley-value refit
 ```
 
-### Synthetic simulations
-Reproduces the synthetic preference simulations (linear, Cobb-Douglas, and Leontief utilities) from the appendix:
-
-```bash
-python empirical_synthetic.py
-```
-
-### Figures
-Reproduces all figures in the paper: use plot_synthetic (for synthetic simulations), plot_understanding (for criteria plot in the appendix for the Tripadvisor data), plots (for other plots)
+Outputs go to `data/ICLR_case_study/`, filenames tagged by year (`outputs_<year>/`,
+`debiased_reviews_<year>.csv`, `criteria_importance_<year>.csv`, `plots/*_<year>.png`,
+`findings_<year>.txt`). 2025 has no `paper_id`/decision column, so its accept/reject
+decision-flip findings are skipped -- it still gets the full set of plots.
 
 ## Computational Requirements
 
-All experiments were run locally on a personal computer. No GPUs or specialized infrastructure are required. All experiments complete within a few hours on standard consumer hardware.
+Runs locally, no GPU required. Most experiments finish within a few hours on consumer hardware;
+the slowest single step is the ICLR case study's Shapley-value refit (~30s/year).
