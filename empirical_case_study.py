@@ -15,7 +15,7 @@ Usage (from the repo root; needs cvxpy available):
     python iclr_analysis.py --full          # force a refit for both years
     python iclr_analysis.py --reuse-fit     # skip the expensive Shapley refit
 
-Everything is written under data/ICLR_case_study/, with every filename tagged by
+Everything is written under data/case_study/, with every filename tagged by
 year (outputs_<year>/, debiased_reviews_<year>.csv, criteria_importance_<year>.csv,
 plots/*_<year>.png, findings_<year>.txt) so 2025 and 2026 coexist in one directory.
 
@@ -36,7 +36,7 @@ CRITERIA = ['soundness', 'presentation', 'contribution']
 CRITERIA_ORDER = ['contribution', 'soundness', 'presentation']
 OVERALL = 'rating'
 
-OUTDIR = 'data/ICLR_case_study'
+OUTDIR = 'data/case_study'
 
 # Everything that differs between the two years lives here; the rest of the code is
 # year-agnostic and reads from this dict. Note the two years use different overall
@@ -86,7 +86,7 @@ def fit_and_debias(year, df, cfg, reuse_fit):
     --reuse-fit skips 1 and 3 (the expensive parts) when their outputs already exist.
     """
     from functions import iso_fit_many, empirical_simulation, run_algorithm
-    from interpretation_functions import compute_shapley_values, weight_vector
+    from functions_interpretation import compute_shapley_values, weight_vector
     from scipy.stats import rankdata
 
     fit_dir = f'{OUTDIR}/outputs_{year}/'
@@ -129,7 +129,7 @@ def make_plots(year):
     """Generate the report figures from the saved fit/debiased reviews: the
     commensuration-bias CDF, the marginal-effect heatmap, and the criterion
     importance bar chart. (Reuses the shared plotting code in interpretation_plots.py.)"""
-    from interpretation_plots import plot_cdf, criterion_marginal_effect_heatmap, plot_criteria_importance
+    from plot_interpretation import plot_cdf, criterion_marginal_effect_heatmap, plot_criteria_importance
     os.makedirs(f'{OUTDIR}/plots', exist_ok=True)   # make the dir the plots actually go in
     d = pd.read_csv(f'{OUTDIR}/debiased_reviews_{year}.csv')
     plot_cdf(d['absolute difference'].values, OUTDIR, year)

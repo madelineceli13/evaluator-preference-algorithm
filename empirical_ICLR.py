@@ -2,27 +2,6 @@ import pandas as pd
 import numpy as np
 from functions import empirical_simulation, noise_level
 
-# -------------------- NASA ------------------------------ # 
-dir_name = 'data/NASA/outputs/'
-name = 'NASA'
-# some data checks to make sure everything is reasonable
-df = pd.read_csv('../data/NASA/solver_evaluator_pairs_13.csv')
-
-print(df.head())
-
-print(df[['solution_feasibility', 'solution_novelty', 'solution_quality']].describe())
-print(df.isna().sum())
-print(df['solution_feasibility'].unique())
-print(df['solution_novelty'].unique())
-print(df['solution_quality'].unique())
-
-# the y-value is the solution quality, and the x-values are the solution feasibility and novelty
-Y = np.asarray(df['solution_quality'])
-X = np.asarray(df[['solution_feasibility', 'solution_novelty']])
-
-empirical_simulation(X,Y, dir_name, name)
-# noise_level(X,Y,name, split = True)
-
 # -------------------- ICLR ------------------------------ # 
 # 2023
 dir_name = 'data/ICLR/outputs_2023/'

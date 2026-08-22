@@ -309,8 +309,8 @@ def compute_empirical_stats(df, X_test, Y_test, name, a, df_iso, Y_train, lam = 
     
     df_row = pd.DataFrame([summary_dict])
     # Append to CSV without headers and without index column
-    file_exists = os.path.exists('results/empirical_stats_rebuttal.csv')
-    df_row.to_csv('results/empirical_stats_rebuttal.csv', mode='a', header= not file_exists, index=False)
+    file_exists = os.path.exists('results/empirical_stats.csv')
+    df_row.to_csv('results/empirical_stats.csv', mode='a', header= not file_exists, index=False)
 
 def compute_empirical_stats_nasa(df, X_test, Y_test, dir_name, a, lam, N):
 

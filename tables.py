@@ -185,3 +185,95 @@ for _, row in df.iterrows():
         f"| {gbm}"
         f"| {ours} |"
     )
+
+
+import math
+
+GROUPS = [
+    ("Tripadvisor", ["All - 2019", "Business", "Couples", "Family"]),
+    ("ICLR peer reviews", ["ICLR 2023", "ICLR 2024", "ICLR 2025", "ICLR 2026"]),
+    ("LLM Case Study", ["GPT-4o", "Llama 3.1 70b", "Human evaluators"]),
+    ("NASA", ["All evaluators", "Multivalent evaluators", "Univalent evaluators", "Outside expertise evaluators"])
+]
+
+SYNTHETIC_PREFERENCES = [
+    ("Cobb-Douglas", "data/synthetic/cobb_douglas_d_2_n_5_sd_02.csv"),
+    ("Linear", "data/synthetic/linear_d_2_n_5_sd_02.csv"),
+    ("Leontief", "data/synthetic/leontief_d_2_n_5_sd_02.csv"),
+]
+
+SYNTHETIC_COLUMNS = [
+    ("$\\lambda = 0$", lambda lam: lam == 0),
+    ("$0 < \\lambda < 1$", lambda lam: (lam > 0) & (lam < 1)),
+    ("$1 \\leq \\lambda < \\infty$", lambda lam: (lam >= 1) & (lam != math.inf)),
+    ("$\\lambda = \\infty$", lambda lam: lam == math.inf),
+]
+
+
+def format_lambda(lam):
+    if lam == 0.0:
+        return "$0$"
+    exponent = round(math.log2(lam))
+    return f"$2^{{{exponent}}}$"
+
+
+def print_empirical_lambda_table():
+    df = pd.read_csv("results/empirical_stats.csv").set_index("Name")
+
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\begin{tabular}{lc}",
+        r"\toprule",
+        r"Dataset & $\lambda^{\star}$ \\",
+        r"\midrule",
+    ]
+    for group_name, dataset_names in GROUPS:
+        lines.append(rf"\textit{{{group_name}}} & \\")
+        for name in dataset_names:
+            lam = df.loc[name, "lambda"]
+            lines.append(rf"\quad {name} & {format_lambda(lam)} \\")
+    lines += [
+        r"\bottomrule",
+        r"\end{tabular}",
+        r"\caption{Optimal regularization parameter $\lambda^{\star}$ selected via cross-validation for each dataset.}",
+        r"\label{tab:lambda_star}",
+        r"\end{table}",
+    ]
+
+    print("\n".join(lines))
+
+
+def print_synthetic_lambda_table():
+    rows = []
+    for label, path in SYNTHETIC_PREFERENCES:
+        lam = pd.read_csv(path)["lambda"]
+        pcts = [100 * cond(lam).mean() for _, cond in SYNTHETIC_COLUMNS]
+        rows.append((label, pcts))
+
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\begin{tabular}{l" + "c" * len(SYNTHETIC_COLUMNS) + "}",
+        r"\toprule",
+        "Preferences & " + " & ".join(name for name, _ in SYNTHETIC_COLUMNS) + r" \\",
+        r"\midrule",
+    ]
+    for label, pcts in rows:
+        formatted = " & ".join(f"{p:.1f}\\%" for p in pcts)
+        lines.append(f"{label} & {formatted} " + r"\\")
+    lines += [
+        r"\bottomrule",
+        r"\end{tabular}",
+        r"\caption{Distribution of the cross-validation-selected $\lambda$ across synthetic simulations, "
+        r"averaged over all sample sizes ($N = 50, \dots, 1000$) and trials, by preference structure.}",
+        r"\label{tab:synthetic_lambda}",
+        r"\end{table}",
+    ]
+
+    print("\n".join(lines))
+
+
+print_empirical_lambda_table()
+print()
+print_synthetic_lambda_table()

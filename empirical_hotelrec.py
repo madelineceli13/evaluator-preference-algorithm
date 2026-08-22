@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from functions import empirical_simulation, noise_level, bootstrap_function_estimation, additional_simulations
+from functions import empirical_simulation, noise_level
 from additional_models import additional_models
 
 
@@ -29,7 +29,7 @@ GBM_GRID_MID = {
 # -------------------- All - 2019 ------------------------------ # 
 dir_name = 'data/hotelrec/outputs_all_2019/'
 name = 'All - 2019'
-df = pd.read_csv('../data/hotelrec_data/reviews_final.csv')
+df = pd.read_csv('../data/hotelrec/reviews_final.csv')
 df = df[df['year']>=2019] 
 
 print(df.head())
@@ -44,12 +44,12 @@ criteria  = df.columns[1:]
 
 Y = np.asarray(df['rating'])
 X = np.asarray(df.iloc[:,1:])
-# additional_simulations(X,Y,dir_name, name)
-# additional_models(X, Y, dir_name, name, nn_grid=NN_GRID_MID, gbm_grid=GBM_GRID_MID,
-                 # hpo_subsample=50000)
-# empirical_simulation(X,Y, dir_name, name)
+additional_models(X, Y, dir_name, name, nn_grid=NN_GRID_MID, gbm_grid=GBM_GRID_MID,
+                 hpo_subsample=50000)
+empirical_simulation(X,Y, dir_name, name)
+
 # -------------------- Business ------------------------------ # 
-df = pd.read_csv('../data/hotelrec_data/reviews_business.csv')
+df = pd.read_csv('../data/hotelrec/reviews_business.csv')
 df = df[df['year']>=2014]
 dir_name = 'data/hotelrec/outputs_business/'
 name = 'Business'
@@ -66,12 +66,12 @@ print(df.shape)
 
 Y = np.asarray(df['rating'])
 X = np.asarray(df[['service','location', 'value', 'cleanliness', 'sleep quality', 'rooms']])
-# additional_simulations(X,Y,dir_name, name)
-# # additional_models(X, Y, dir_name, name, nn_grid=NN_GRID_MID, gbm_grid=GBM_GRID_MID,
-#                   hpo_subsample=50000)
-# empirical_simulation(X,Y, dir_name, name)
+additional_models(X, Y, dir_name, name, nn_grid=NN_GRID_MID, gbm_grid=GBM_GRID_MID,
+                  hpo_subsample=50000)
+empirical_simulation(X,Y, dir_name, name)
+
 # -------------------- Couples ------------------------------ # 
-df = pd.read_csv('../data/hotelrec_data/reviews_couple.csv')
+df = pd.read_csv('../data/hotelrec/reviews_couple.csv')
 df = df[df['year']>=2014]
 dir_name = 'data/hotelrec/outputs_couple/'
 name = 'Couples'
@@ -88,14 +88,13 @@ print(df.shape)
 
 Y = np.asarray(df['rating'])
 X = np.asarray(df[['service','location', 'value', 'cleanliness', 'sleep quality', 'rooms']])
-# additional_simulations(X,Y,dir_name, name)
 
 empirical_simulation(X,Y, dir_name, name)
 noise_level(X,Y,name, split = True)
-# additional_models(X, Y, dir_name, name, nn_grid=NN_GRID_MID, gbm_grid=GBM_GRID_MID,
-#                   hpo_subsample=50000)
+additional_models(X, Y, dir_name, name, nn_grid=NN_GRID_MID, gbm_grid=GBM_GRID_MID,
+                  hpo_subsample=50000)
 # -------------------- Family ------------------------------ # 
-df = pd.read_csv('../data/hotelrec_data/reviews_family.csv')
+df = pd.read_csv('../data/hotelrec/reviews_family.csv')
 df = df[df['year']>=2014]
 dir_name = 'data/hotelrec/outputs_family/'
 name = 'Family'
@@ -112,7 +111,6 @@ print(df.shape)
 
 Y = np.asarray(df['rating'])
 X = np.asarray(df[['service','location', 'value', 'cleanliness', 'sleep quality', 'rooms']])
-# additional_simulations(X,Y,dir_name, name)
-# additional_models(X, Y, dir_name, name, nn_grid=NN_GRID_MID, gbm_grid=GBM_GRID_MID,
-#                   hpo_subsample=50000)
-# empirical_simulation(X,Y, dir_name, name)
+additional_models(X, Y, dir_name, name, nn_grid=NN_GRID_MID, gbm_grid=GBM_GRID_MID,
+                  hpo_subsample=50000)
+empirical_simulation(X,Y, dir_name, name)

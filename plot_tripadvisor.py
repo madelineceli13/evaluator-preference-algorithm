@@ -111,4 +111,3 @@ def plot_noise_and_alignment():
     plt.tight_layout()
     plt.subplots_adjust(wspace=0.3)
     plt.savefig('plots/noise_and_alignment.png', dpi=300, bbox_inches='tight')
-# plot_noise_and_alignment()
